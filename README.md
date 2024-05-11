@@ -28,12 +28,10 @@ Information about cryptocurrencies can be obtained by sending requests to the pu
 The idea is to store all information about users' crypto wallets in a database.
 
 ## REST endpoints demonstration
-<!--![REST endpoints](./img/REST%20structure.jpg)-->
-<img src="./img/REST%20structure.jpg" alt="REST endpoints" width="1000" height="500">
+![REST endpoints](./img/REST%20structure.jpg)
 
 ## DB structure: diagram
-<!--![DB structure](./img/DB%20structure.png)-->
-<img src="./img/DB%20structure.jpg" alt="DB structure" width="1000" height="500">
+![DB structure](./img/DB%20structure.jpg)
 
 ### DB structure: explanation
 > [!IMPORTANT]
