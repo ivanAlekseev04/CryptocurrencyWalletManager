@@ -14,18 +14,21 @@ The idea is to create an application providing an opportunity to create and mana
 Information about cryptocurrencies can be obtained by sending requests to the public [REST API](https://www.coinapi.io/). The information itself can be stored in a database, and since cryptocurrencies are too dynamic, we could put a certain period of time in which the retrieved information is considered up-to-date (for example ```5``` minutes), after which a new request is made to the REST API. This way we will also optimize the requests to the API.
 
 #### Users will have the following functionalities:
-- Register – Create a crypto wallet
-- Login – Login to the profile
-- Deposit - Deposit in the wallet
-- Withdraw - Withdraw an amount from the wallet
-- List offerings - Overview of available cryptocurrencies that are provided by the application
-- Buy - Purchase of a certain amount of a given cryptocurrency
-- Sell - Selling a certain amount of pre-purchased cryptocurrency
-- Wallet summary - Overview of all active investments - Information is provided on the current profit/loss of all active investments
-- Wallet overall summary - Overview of account history - Provides comprehensive information on all purchases and sales of different currencies. Profit and loss is calculated for each investment, as well as total profit and loss from all investments made
-- Filtered transactions according to date - Gets all/bought/sold transactions after/before/beteween date(s)
-- Crypto transaction history - Gets all(bought + sold) his transactions with the specified cryptocurrency to concrete user
-- Logout - Exit
+* User account
+  * Register – Create a crypto wallet
+  * Login – Login to the profile
+  * Update - Update user account credentials
+  * Logout - Exit from the account (end session)
+* Wallet interactions
+  * Deposit - Deposit in the wallet
+  * Withdraw - Withdraw an amount from the wallet
+  * List offerings - Overview of available cryptocurrencies that are provided by the application
+  * Buy - Purchase of a certain amount of a given cryptocurrency
+  * Sell - Selling a certain amount of pre-purchased cryptocurrency
+  * Wallet summary - Overview of all active investments - Information is provided on the current profit/loss of all active investments
+  * Wallet overall summary - Overview of account history - Provides comprehensive information on all purchases and sales of different currencies. Profit and loss is calculated for each investment, as well as   total profit and loss from all investments made
+  * Filtered transactions according to date - Gets all/bought/sold transactions after/before/beteween date(s)
+  * Crypto transaction history - Gets all(bought + sold) his transactions with the specified cryptocurrency to concrete user
 
 The idea is to store all information about users' crypto wallets in a database.
 
