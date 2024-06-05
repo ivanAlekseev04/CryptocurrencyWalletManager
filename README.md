@@ -27,7 +27,7 @@ Information about cryptocurrencies can be obtained by sending requests to the pu
   * Sell - Selling a certain amount of pre-purchased cryptocurrency
   * Wallet summary - Overview of all active investments - Information is provided on the current profit/loss of all active investments
   * Wallet overall summary - Overview of account history - Provides comprehensive information on all purchases and sales of different currencies. Profit and loss is calculated for each investment, as well as   total profit and loss from all investments made
-  * Filtered transactions according to date - Gets all/bought/sold transactions after/before/beteween date(s)
+  * Filtered transactions according to date - Gets all/bought/sold transactions with specific asset/all after/before/beteween date(s)
   * Crypto transaction history - Gets all(bought + sold) his transactions with the specified cryptocurrency to concrete user
 
 The idea is to store all information about users' crypto wallets in a database.
@@ -50,18 +50,18 @@ The idea is to store all information about users' crypto wallets in a database.
 
 ### Calculating profit for cryptocurrencies
 #### Explanation/influence on DB structure
-* We can maintain field ```average_asset_buying_price```(with initial value ```0```) in ```wallet``` table. With its help we will calculate profit from selling any crypto at any time with minimum DB operations.   
+* We can maintain field ```average_crypto_buying_price```(with initial value ```0```) in ```user_crypto``` table. With its help we will calculate profit from selling any crypto at any time with minimum DB operations.   
 #### Algorithm for calculating profit
-* ```selling_profit``` = "selling_amount" * ("selling_price" - ```average_asset_buying_price```)
-#### Algorithm for calculating ```average_asset_buying_price```
-* "average_asset_buying_price" = ("bought_price_of_new_crypto" * "bought_amount" + (```average_asset_buying_price``` * "existed_amount")) / ("existed_amount" + "bought_amount")
-#### Example of calculating ```profit``` and ```average_asset_buying_price```
+* ```selling_profit``` = "selling_amount" * ("selling_price" - ```average_crypto_buying_price```)
+#### Algorithm for calculating ```average_crypto_buying_price```
+* "average_crypto_buying_price" = ("bought_price_of_new_crypto" * "bought_amount" + (```average_crypto_buying_price``` * "existed_amount")) / ("existed_amount" + "bought_amount")
+#### Example of calculating ```profit``` and ```average_crypto_buying_price```
 1) We buy 2 BTC with price 30000 each.
-> "average_asset_buying_price" = (30000 * 2 + (0 * 0)) / 2 = 30000
+> "average_crypto_buying_price" = (30000 * 2 + (0 * 0)) / 2 = 30000
 2) We buy 1 BTC later with price 60000.
-> "average_asset_buying_price" = (60000 * 1 + (30000 * 2)) / 3 = 40000
+> "average_crypto_buying_price" = (60000 * 1 + (30000 * 2)) / 3 = 40000
 3) We sell 1 BTC for 45000.
-> So there after selling 1 BTC for 45000 our profit will be: 45000 - "average_asset_buying_price"((30000*2 + 60000) / 3) = 5000; so after selling 1 BTC we still have 2 BTC and "average_asset_buying_price" won't change.
+> So there after selling 1 BTC for 45000 our profit will be: 45000 - "average_crypto_buying_price"((30000*2 + 60000) / 3) = 5000; so after selling 1 BTC we still have 2 BTC and "average_crypto_buying_price" won't change.
 4) Then we buy 2 BTC for 50000 each.
 > "average_asset_buying_price" become: (50000 * 2 + ("average_asset_buying_price" * 2)) / 4 = 45000
 
