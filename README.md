@@ -63,7 +63,7 @@ The idea is to store all information about users' crypto wallets in a database.
 3) We sell 1 BTC for 45000.
 > So there after selling 1 BTC for 45000 our profit will be: 45000 - "average_crypto_buying_price"((30000*2 + 60000) / 3) = 5000; so after selling 1 BTC we still have 2 BTC and "average_crypto_buying_price" won't change.
 4) Then we buy 2 BTC for 50000 each.
-> "average_asset_buying_price" become: (50000 * 2 + ("average_asset_buying_price" * 2)) / 4 = 45000
+> "average_crypto_buying_price" become: (50000 * 2 + ("average_crypto_buying_price" * 2)) / 4 = 45000
 
 > [!IMPORTANT] 
-> ```average_asset_buying_price``` can be the column in ```wallet``` table and to be updated at every buy transaction for this asset. By this way we will know at any moment what was the actual buying price(average) for the concrete crypto by the concrete user and selling price will be fetched from the CoinAPI.
+> ```average_crypto_buying_price``` can be the column in ```wallet``` table and to be updated at every buy transaction for this asset. By this way we will know at any moment what was the actual buying price(average) for the concrete crypto by the concrete user and selling price will be fetched from the CoinAPI.
