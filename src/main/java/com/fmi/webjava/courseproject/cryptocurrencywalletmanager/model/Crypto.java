@@ -13,11 +13,11 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
+@Builder
 public class Crypto {
     @Id
-    //@NotNull
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -29,8 +29,8 @@ public class Crypto {
     @Min(value = 0, message = "Asset: price cannot be negative")
     private Double price;
 
-    public Crypto(String name, Double price) {
-        this.name = name;
-        this.price = price;
-    }
+//    public Crypto(String name, Double price) {
+//        this.name = name;
+//        this.price = price;
+//    }
 }

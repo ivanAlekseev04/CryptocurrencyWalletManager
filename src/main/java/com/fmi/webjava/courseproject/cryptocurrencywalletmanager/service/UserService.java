@@ -2,9 +2,11 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.repository.UserRepository;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.security.userdetails.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
+@Transactional
 @Slf4j
 public class UserService {
     @Autowired
@@ -29,40 +32,48 @@ public class UserService {
     private AuthenticationManager authenticationManager;
     private static final int MAX_PASSWORD_LENGTH = 256;
 
-    public User register(String name, String password) {
-        User registered = userRepository.save(new User(name, passwordEncoder.encode(password)));
+    public User register(User user) {
+        if (userRepository.findByUserName(user.getUserName()).isPresent()) {
+            throw new DataIntegrityViolationException(String.format("User with name '%s' already exists"
+                    , user.getUserName()));
+        }
+
+        //User registered = userRepository.save(new User(name, passwordEncoder.encode(password)));
+        User registered = userRepository.save(User.builder()
+                .userName(user.getUserName())
+                .password(passwordEncoder.encode((user.getPassword())))
+                .build());
 
         log.info("User with name {} registered", registered.getUserName());
 
         return registered;
     }
 
-    public void login(String name, String password, HttpSession session) {
+    public void login(User user, HttpSession session) {
         var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(name, password));
+                new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Store SecurityContext in the session
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
                 , SecurityContextHolder.getContext());
 
-        log.info("User {} logged in", name);
+        log.info("User {} logged in", user.getUserName());
     }
 
-    public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    public User updateCredentials(String newName, String newPassword, ServletRequest request) {
+    public User updateCredentials(User user, ServletRequest request) {
         String oldName = SecurityContextHolder.getContext().getAuthentication().getName();
         var toUpdate = userRepository.findByUserName(oldName);
 
+        String newName = user.getUserName();
+        String newPassword = user.getPassword();
+
         if(toUpdate.isEmpty()) {
-            throw new EntityNotFoundException(String.format("User with name '%s' is existed", oldName));
+            throw new EntityNotFoundException(String.format("User with name '%s' is not existed", oldName));
         }
 
         if (newName != null) {
-            if(newName.isEmpty() || newPassword.isBlank()) {
+            if(newName.isEmpty() || newName.isBlank()) {
                 throw new IllegalArgumentException("userName need to have minimum 1 non-white space character");
             }
             if (userRepository.findByUserName(newName).isPresent()) {
@@ -81,10 +92,12 @@ public class UserService {
         }
 
         // Updating authentication object in SecurityContextHolder
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(toUpdate.get().getUserName(),
-                        null,  Collections.singleton(
-                                new SimpleGrantedAuthority("ROLE_USER")));
+        var authentication = new UsernamePasswordAuthenticationToken(CustomUserDetails.builder()
+                        .id(toUpdate.get().getId())
+                        .userName(toUpdate.get().getUserName())
+                        .password(toUpdate.get().getPassword())
+                        .build(), toUpdate.get().getPassword(),
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -92,11 +105,15 @@ public class UserService {
         return userRepository.save(toUpdate.get());
     }
 
-    public void deleteUser() { // TODO: or maybe search by password
+    public void deleteUser() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         userRepository.deleteByUserName(userName);
 
         log.info("User '{}' was deleted successfully", userName);
         logout();
+    }
+
+    public void logout() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 }

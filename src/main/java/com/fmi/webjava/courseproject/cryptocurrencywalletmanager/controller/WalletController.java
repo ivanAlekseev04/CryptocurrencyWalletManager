@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class WalletController {
     @Autowired
     private CryptoRepository cryptoRepository;
+    // TODO: in-memory List/Set for crypto that are actual (fetched in last 5 minutes) -> do it in service
 
-    // FIXME: only for debugging
     @PostMapping("/crypto")
     public ResponseEntity<Crypto> addCrypto(@RequestBody @Valid Crypto crypto) {
-        return new ResponseEntity<>(cryptoRepository.save(new Crypto(crypto.getName()
-                , crypto.getPrice())), HttpStatus.CREATED);
+        return new ResponseEntity<>(cryptoRepository.save(Crypto.builder()
+                .name(crypto.getName())
+                .price(crypto.getPrice())
+                .build()), HttpStatus.CREATED);
     }
 }

@@ -20,6 +20,7 @@ import java.util.Set;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,20 +38,24 @@ public class User {
     private String password;
 
     @Min(value = 0, message = "User: money cannot be negative")
+    @Builder.Default
     private Double money = 0.0;
 
-    @Valid // TODO: test cascade type
+    @Valid
     @OneToMany(mappedBy = "id.user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Builder.Default
     private Set<Transaction> transactions = new HashSet<>();
 
     @OneToMany(mappedBy = "id.user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Builder.Default
     private Set<UserCrypto> cryptoCurrencies = new HashSet<>();
 
     @Column(name = "overall_transactions_profit")
+    @Builder.Default
     private Double overallTransactionsProfit = 0.0;
 
-    public User(String userName, String password) {
-        this.userName = userName;
-        this.password =  password;
-    }
+//    public User(String userName, String password) {
+//        this.userName = userName;
+//        this.password =  password;
+//    }
 }

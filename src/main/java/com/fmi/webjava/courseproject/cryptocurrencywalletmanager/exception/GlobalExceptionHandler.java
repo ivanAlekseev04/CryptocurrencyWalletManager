@@ -11,7 +11,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,15 +45,10 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(DataIntegrityViolationException.class)
     public final ResponseEntity<Map<String, String>> handleInsertingDuplicatesToDB(DataIntegrityViolationException e) {
-        Map<String, String> errors = new HashMap<>();
-        Arrays.stream(e.getMostSpecificCause().getMessage().split("\n"))
-                .map(String::strip).forEach(errLine -> {
-                    String[] err = errLine.split(":");
-                    errors.put(err[0], err[1]);
-                });
+        var msg = Map.of("message", e.getMessage());
 
-        log.error(errors.toString());
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
 
     // catch Hibernate validation exceptions

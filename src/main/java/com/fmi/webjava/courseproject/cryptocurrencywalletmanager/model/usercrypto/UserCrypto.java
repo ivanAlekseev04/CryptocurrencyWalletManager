@@ -14,8 +14,9 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
+//@NoArgsConstructor
+//@AllArgsConstructor
+@Builder
 public class UserCrypto {
     @EmbeddedId
     @NotNull

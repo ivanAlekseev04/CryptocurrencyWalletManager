@@ -21,15 +21,15 @@ public class UserController {
     private UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid User user) {
-        UserDTO created = userMapper.userToUserDTO(userService.register(user.getUserName(), user.getPassword()));
+    public ResponseEntity<UserDTO> register(@RequestBody @Valid User user) {
+        UserDTO created = userMapper.userToUserDTO(userService.register(user));
 
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody @Valid User user, HttpServletRequest request) {
-        userService.login(user.getUserName(), user.getPassword(), request.getSession());
+        userService.login(user, request.getSession());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -41,15 +41,26 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/update")
+    // TODO: for debugging
+//    @GetMapping("/user")
+//    public final ResponseEntity<User> info() {
+//        var d = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        return new ResponseEntity<>(User.builder()
+//                .id(d.getId())
+//                .userName(d.getUsername())
+//                .password(d.getPassword())
+//                .build(), HttpStatus.OK);
+//    }
+
+    @PatchMapping("user/update")
     public ResponseEntity<UserDTO> updateUser(@RequestBody User user, ServletRequest request) {
-        UserDTO updated = userMapper.userToUserDTO(userService.updateCredentials(user.getUserName()
-                , user.getPassword(), request));
+        UserDTO updated = userMapper.userToUserDTO(userService.updateCredentials(user, request));
 
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("user/delete")
     public final ResponseEntity<Void> deleteUser() {
         userService.deleteUser();
 
