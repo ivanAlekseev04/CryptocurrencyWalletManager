@@ -5,7 +5,7 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {TransactionMapper.class})
+@Mapper(componentModel = "spring"/*, uses = {TransactionMapper.class,UserCryptoMapper.class}*/)
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)

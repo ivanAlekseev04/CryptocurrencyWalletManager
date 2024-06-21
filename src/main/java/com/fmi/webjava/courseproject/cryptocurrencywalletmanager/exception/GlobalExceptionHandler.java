@@ -1,6 +1,7 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,13 @@ public class GlobalExceptionHandler {
         log.error(msg.toString());
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(InsufficientFundsException.class)
+    public final ResponseEntity<Map<String, String>> handleInsufficientFunds(InsufficientFundsException e) {
+        var msg = Map.of("message", e.getMessage());
+
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    }
 
     // catch DB exceptions
     @ExceptionHandler(EntityNotFoundException.class)
@@ -61,5 +69,17 @@ public class GlobalExceptionHandler {
 
         log.error(errors.toString());
         return ResponseEntity.badRequest().body(errors);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
+        //var errorMessage = Map.of(ex.getConstraintName(), ex.getErrorMessage());
+        var errorMessage = Map.of("message", ex.getConstraintViolations()
+                .stream()
+                .map(cv -> cv.getMessage())
+                .findFirst()
+                .orElse("Validation error"));
+
+        log.error(errorMessage.toString());
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 }
