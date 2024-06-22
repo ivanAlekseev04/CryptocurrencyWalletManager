@@ -13,20 +13,20 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-//@AllArgsConstructor
-//@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Crypto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @NotBlank(message = "Asset: assetName need to have minimum 1 non-white space character")
+    @NotNull(message = "Crypto: name can't be null")
+    @NotBlank(message = "Crypto: name need to have minimum 1 non-white space character")
     private String name;
 
-    @NotNull
-    @Min(value = 0, message = "Asset: price cannot be negative")
+    @NotNull(message = "Crypto: price can't be null")
+    @Min(value = 0, message = "Crypto: price cannot be negative")
     private Double price;
 
 //    public Crypto(String name, Double price) {

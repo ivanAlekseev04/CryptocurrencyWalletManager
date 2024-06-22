@@ -41,18 +41,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO: for debugging
-//    @GetMapping("/user")
-//    public final ResponseEntity<User> info() {
-//        var d = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//        return new ResponseEntity<>(User.builder()
-//                .id(d.getId())
-//                .userName(d.getUsername())
-//                .password(d.getPassword())
-//                .build(), HttpStatus.OK);
-//    }
-
     @PatchMapping("user/update")
     public ResponseEntity<UserDTO> updateUser(@RequestBody User user, ServletRequest request) {
         UserDTO updated = userMapper.userToUserDTO(userService.updateCredentials(user, request));

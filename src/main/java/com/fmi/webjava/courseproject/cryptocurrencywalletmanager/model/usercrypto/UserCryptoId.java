@@ -1,23 +1,26 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.usercrypto;
 
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.Crypto;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Embeddable
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCryptoId implements Serializable {
-    @ManyToOne
-    @NotNull
-    @JoinColumn(name = "user_id")
-    private User user;
+    @NotNull(message = "UserCryptoId: user cannot be null")
+    @Column(name = "user_id")
+    private Long userId;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "crypto_id")
-    private Crypto crypto;
+    @NotNull(message = "UserCryptoId: cryptoName cannot be null")
+    @NotBlank(message = "UserCrypto: cryptoName need to have minimum 1 non-white space character")
+    @Column(name = "crypto_name")
+    private String cryptoName;
 }

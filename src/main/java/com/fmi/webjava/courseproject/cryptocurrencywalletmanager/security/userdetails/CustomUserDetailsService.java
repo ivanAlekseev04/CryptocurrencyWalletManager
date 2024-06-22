@@ -1,7 +1,6 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.security.userdetails;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.repository.UserRepository;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-@Data
+//@Data TODO: check if without it'll work
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired

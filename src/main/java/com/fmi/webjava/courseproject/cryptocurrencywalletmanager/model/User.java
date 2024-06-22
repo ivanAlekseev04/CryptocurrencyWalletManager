@@ -1,6 +1,5 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model;
 
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.transaction.Transaction;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.usercrypto.UserCrypto;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -26,31 +25,36 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
+    @NotNull(message = "User: userName cannot be null")
     @NotBlank(message = "User: userName need to have minimum 1 non-white space character")
     @Length(max = 30, message = "User: userName can have length maximum 30 symbols")
     @Column(name = "user_name", unique = true)
     private String userName;
 
-    @NotNull
+    @NotNull(message = "User: password cannot be null")
     @NotBlank(message = "User: password need to have minimum 1 non-white space character")
     @Length(max = 256, message = "User: password can have length maximum 256 symbols")
     private String password;
 
     @Min(value = 0, message = "User: money cannot be negative")
+    @NotNull(message = "User: money cannot null") // TODO: check
     @Builder.Default
     private Double money = 0.0;
 
     @Valid
-    @OneToMany(mappedBy = "id.user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(/*mappedBy = "user", */cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
     @Builder.Default
     private Set<Transaction> transactions = new HashSet<>();
 
-    @OneToMany(mappedBy = "id.user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Valid
+    @OneToMany(/*mappedBy = "id.user", */cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
     @Builder.Default
     private Set<UserCrypto> cryptoCurrencies = new HashSet<>();
 
     @Column(name = "overall_transactions_profit")
+    @NotNull(message = "User: overallTransactionProfit cannot null")
     @Builder.Default
     private Double overallTransactionsProfit = 0.0;
 

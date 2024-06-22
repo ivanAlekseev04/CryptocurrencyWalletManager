@@ -14,21 +14,20 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-//@NoArgsConstructor
-//@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCrypto {
     @EmbeddedId
-    @NotNull
     @Valid
     private UserCryptoId id;
 
-    @NotNull
+    @NotNull(message = "UserCrypto: amount cannot be null")
     @Min(value = 0, message = "Asset: crypto amount cannot be negative")
     private Double amount;
 
     @Column(name = "average_crypto_buying_price")
-    @NotNull
+    @NotNull(message = "UserCrypto: averageCryptoBuyingPrice cannot be null")
     @Min(value = 0, message = "Wallet: average crypto buying price cannot be negative")
     private Double averageCryptoBuyingPrice;
 }

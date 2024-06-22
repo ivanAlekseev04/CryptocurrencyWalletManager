@@ -1,28 +1,40 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.controller;
 
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.Crypto;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.repository.CryptoRepository;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserCryptoDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryptoMapper;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/wallet")
 public class WalletController {
     @Autowired
-    private CryptoRepository cryptoRepository;
-    // TODO: in-memory List/Set for crypto that are actual (fetched in last 5 minutes) -> do it in service
+    private WalletService walletService;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private UserCryptoMapper userCryptoMapper;
 
-    @PostMapping("/crypto")
-    public ResponseEntity<Crypto> addCrypto(@RequestBody @Valid Crypto crypto) {
-        return new ResponseEntity<>(cryptoRepository.save(Crypto.builder()
-                .name(crypto.getName())
-                .price(crypto.getPrice())
-                .build()), HttpStatus.CREATED);
+    @PostMapping("/deposit_money/{amount}")
+    public ResponseEntity<Map<String, Double>> depositMoney(@PathVariable("amount") Double amount) {
+        var incrementedBalance = Map.of("money", walletService.depositMoney(amount).getMoney());
+
+        return new ResponseEntity<>(incrementedBalance, HttpStatus.OK);
+    }
+
+    @PostMapping("/buy/{amount}")
+    public ResponseEntity<UserCryptoDTO> buyCrypto(@PathVariable("amount") Double amount, // TODO: UserCryptoDTO
+                                                   @RequestBody @Valid CryptoDTO cryptoDTO) {
+
+        return new ResponseEntity<>(userCryptoMapper.userCryptoToUserCryptoDTO(
+                walletService.buyCrypto(cryptoDTO, amount)), HttpStatus.OK);
     }
 }

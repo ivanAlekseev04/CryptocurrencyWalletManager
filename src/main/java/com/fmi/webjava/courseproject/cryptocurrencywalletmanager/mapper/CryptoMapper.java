@@ -7,8 +7,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CryptoMapper {
-    CryptoDTO assetToAssetDTO(Crypto crypto);
+    CryptoDTO cryptoToCryptoDTO(Crypto crypto);
 
     @Mapping(target = "id", ignore = true)
-    Crypto assetDTOToAsset(CryptoDTO cryptoDTO);
+    Crypto cryptoDTOToCrypto(CryptoDTO cryptoDTO);
 }
