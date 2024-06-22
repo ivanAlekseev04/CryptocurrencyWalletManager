@@ -91,4 +91,12 @@ public class GlobalExceptionHandler {
         log.error(errorMessage.toString());
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BadRequestToAPIException.class)
+    public final ResponseEntity<Map<String, String>> handleBadRequestToAPI(BadRequestToAPIException e) {
+        var msg = Map.of("message", e.getMessage());
+
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    }
 }

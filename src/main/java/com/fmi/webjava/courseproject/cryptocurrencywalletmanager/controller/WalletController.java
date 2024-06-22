@@ -1,27 +1,51 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.controller;
 
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserCryptoDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryptoMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletService;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletServiceImpl;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping("/wallet")
 public class WalletController {
     @Autowired
-    private WalletService walletService;
+    private WalletServiceImpl walletService;
     @Autowired
     private UserMapper userMapper;
     @Autowired
     private UserCryptoMapper userCryptoMapper;
+
+    @GetMapping("/list_offerings")
+    public ResponseEntity<Set<CryptoInformation>> list_offerings(@RequestParam(value = "asset_type", required = false) String assetType) {
+        String type = "";
+        if (assetType != null && assetType.equals("coins")) {
+            type = "coins";
+        }
+        else if (assetType != null && assetType.equals("crypto")) {
+            type = "crypto";
+        }
+        else if (assetType != null) {
+            log.info("Invalid option for asset_type: valid ones - crypto/coins, chosen {}", assetType);
+            throw new IllegalArgumentException("Invalid options for asset_type: valid ones are crypto/coins");
+        }
+
+        Set<CryptoInformation> assets = walletService.listOfferings(type);
+        log.info("Returning assets to user {}", SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<>(assets, HttpStatus.OK);
+    }
 
     @PostMapping("/deposit_money/{amount}")
     public ResponseEntity<Map<String, Double>> depositMoney(@PathVariable("amount") Double amount) {
