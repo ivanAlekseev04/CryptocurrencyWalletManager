@@ -111,7 +111,7 @@ public class WalletService {
         transactionRepository.save(Transaction.builder()
                 .crypto(crypto)
                 .dateOfCommit(LocalDateTime.now())
-                .userId(curUser.getId())
+                .user(curUser)
                 .amount(amount)
                 .type(TransactionType.BOUGHT.toString())
                 .build());

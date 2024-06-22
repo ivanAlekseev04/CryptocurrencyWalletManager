@@ -22,7 +22,8 @@ import java.util.Set;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @NotNull(message = "User: userName cannot be null")
@@ -37,29 +38,23 @@ public class User {
     private String password;
 
     @Min(value = 0, message = "User: money cannot be negative")
-    @NotNull(message = "User: money cannot null") // TODO: check
+    @NotNull(message = "User: money cannot null")
     @Builder.Default
     private Double money = 0.0;
-
-    @Valid
-    @OneToMany(/*mappedBy = "user", */cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    @Builder.Default
-    private Set<Transaction> transactions = new HashSet<>();
-
-    @Valid
-    @OneToMany(/*mappedBy = "id.user", */cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
-    @Builder.Default
-    private Set<UserCrypto> cryptoCurrencies = new HashSet<>();
 
     @Column(name = "overall_transactions_profit")
     @NotNull(message = "User: overallTransactionProfit cannot null")
     @Builder.Default
     private Double overallTransactionsProfit = 0.0;
 
-//    public User(String userName, String password) {
-//        this.userName = userName;
-//        this.password =  password;
-//    }
+    @Valid
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Builder.Default
+    private Set<Transaction> transactions = new HashSet<>();
+
+    @Valid
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Builder.Default
+    private Set<UserCrypto> cryptoCurrencies = new HashSet<>();
+
 }

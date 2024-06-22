@@ -15,8 +15,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserCryptoId implements Serializable {
+    // This column refers user_id column in user table
     @NotNull(message = "UserCryptoId: user cannot be null")
-    @Column(name = "user_id")
     private Long userId;
 
     @NotNull(message = "UserCryptoId: cryptoName cannot be null")
