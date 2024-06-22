@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,14 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public final ResponseEntity<Map<String, String>> handleFailedAuthentication(BadCredentialsException e) {
+        var msg = Map.of("message", e.getMessage());
+
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public final ResponseEntity<Map<String, String>> handleUnauthorizedUser(UsernameNotFoundException e) {
         var msg = Map.of("message", e.getMessage());
 
         log.error(msg.toString());
