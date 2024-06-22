@@ -36,7 +36,7 @@ The idea is to store all information about users' crypto wallets in a database.
 ![REST endpoints](./img/REST%20endpoints.png)
 
 ## DB structure: diagram
-![DB structure](./img/DB%20diagram.png)
+![DB structure](./img/DBdiagram.png)
 
 ### DB structure: explanation
 > [!IMPORTANT]
