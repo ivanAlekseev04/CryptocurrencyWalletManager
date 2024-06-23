@@ -3,6 +3,7 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.controller;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoInputDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletOverallSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
@@ -101,6 +102,13 @@ public class WalletController {
     @GetMapping("/wallet_summary")
     public ResponseEntity<Set<GetWalletSummaryOutput>> getWalletSummary(@RequestParam(value = "asset_name", required = false) String assetName) {
         Set<GetWalletSummaryOutput> wallet = walletService.wallet_summary(assetName);
+
+        return new ResponseEntity<>(wallet, HttpStatus.OK);
+    }
+
+    @GetMapping("/wallet_overall_summary")
+    public ResponseEntity<GetWalletOverallSummaryOutput> getWalletOverallSummary() {
+        GetWalletOverallSummaryOutput wallet = walletService.wallet_overall_summary();
 
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }

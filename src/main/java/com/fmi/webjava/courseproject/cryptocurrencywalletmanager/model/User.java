@@ -48,11 +48,6 @@ public class User {
     private Double overallTransactionsProfit = 0.0;
 
     @Valid
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @Builder.Default
-    private Set<Transaction> transactions = new HashSet<>();
-
-    @Valid
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Builder.Default
     private Set<UserCrypto> cryptoCurrencies = new HashSet<>();

@@ -2,6 +2,7 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletOverallSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.AssetNotFoundException;
@@ -203,6 +204,17 @@ public class WalletServiceImpl implements WalletService {
 
         log.info("Returning active investment for user {} and asset {}", currUserName(), assetID);
         return Set.of(res);
+    }
+
+    @Override
+    public GetWalletOverallSummaryOutput wallet_overall_summary() {
+        log.info("Returning infortmation for user {}'s profile", currUserName());
+        User currUser = userRepository.findById(curUserId()).get();
+
+        var walletSummary = wallet_summary(null);
+
+        return new GetWalletOverallSummaryOutput(currUser.getId(), currUser.getUserName(), currUser.getMoney(),
+                currUser.getOverallTransactionsProfit(), walletSummary);
     }
 
     private Long curUserId() {
