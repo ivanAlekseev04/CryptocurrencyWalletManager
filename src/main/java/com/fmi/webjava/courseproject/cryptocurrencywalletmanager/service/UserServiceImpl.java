@@ -4,7 +4,6 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.repository.UserRepository;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.security.userdetails.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

@@ -6,4 +6,5 @@ import java.util.Set;
 
 public interface WalletService {
     Set<CryptoInformation> listOfferings(String assetType);
+    CryptoInformation listOfferingsCertainAsset(String assetID);
 }

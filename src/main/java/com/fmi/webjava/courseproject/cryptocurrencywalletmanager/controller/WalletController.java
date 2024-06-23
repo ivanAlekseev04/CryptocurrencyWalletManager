@@ -29,7 +29,7 @@ public class WalletController {
     private UserCryptoMapper userCryptoMapper;
 
     @GetMapping("/list_offerings")
-    public ResponseEntity<Set<CryptoInformation>> list_offerings(@RequestParam(value = "asset_type", required = false) String assetType) {
+    public ResponseEntity<Set<CryptoInformation>> listOfferings(@RequestParam(value = "asset_type", required = false) String assetType) {
         String type = "";
         if (assetType != null && assetType.equals("coins")) {
             type = "coins";
@@ -45,6 +45,17 @@ public class WalletController {
         Set<CryptoInformation> assets = walletService.listOfferings(type);
         log.info("Returning assets to user {}", SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(assets, HttpStatus.OK);
+    }
+
+    @GetMapping("/list_offerings/asset/{asset_id}")
+    public ResponseEntity<CryptoInformation> getCertainAsset(@PathVariable("asset_id") String assetID) {
+        if (assetID == null || assetID.isBlank()) {
+            log.error("Invalid asset_id declaration");
+            throw new IllegalArgumentException("Error: invalid assetID");
+        }
+
+        CryptoInformation asset = walletService.listOfferingsCertainAsset(assetID);
+        return new ResponseEntity<>(asset, HttpStatus.OK);
     }
 
     @PostMapping("/deposit_money/{amount}")

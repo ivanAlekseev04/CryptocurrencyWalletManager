@@ -99,4 +99,12 @@ public class GlobalExceptionHandler {
         log.error(msg.toString());
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AssetNotFoundException.class)
+    public final ResponseEntity<Map<String, String>> handleAssetNotFoundException(AssetNotFoundException e) {
+        var msg = Map.of("message", e.getMessage());
+
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -2,6 +2,7 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.AssetNotFoundException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.InsufficientFundsException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.CryptoMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.Crypto;
@@ -69,6 +70,20 @@ public class WalletServiceImpl implements WalletService {
 
         log.info("User {} requested all type of assets", SecurityContextHolder.getContext().getAuthentication().getName());
         return coinApiService.getCrypto();
+    }
+
+    public CryptoInformation listOfferingsCertainAsset(String assetID) {
+        Optional<CryptoInformation> asset = coinApiService.getCrypto().stream()
+                .filter(currAsset -> currAsset.assetID().equals(assetID))
+                .findFirst();
+
+        if (asset.isEmpty()) {
+            log.info("Searching for unavailable asset with id {}", assetID);
+            throw new AssetNotFoundException("Error: Asset with id " + assetID + " is not currently available");
+        }
+
+        log.info("Retrieving information for asset {}", assetID);
+        return asset.get();
     }
 
     public UserCrypto buyCrypto(CryptoDTO cryptoDTO, Double amount) {
