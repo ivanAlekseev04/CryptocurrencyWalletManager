@@ -1,7 +1,9 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.controller;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoInputDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserCryptoDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryptoMapper;
@@ -78,22 +80,22 @@ public class WalletController {
     }
 
     @PostMapping("/buy")
-    public ResponseEntity<UserCryptoDTO> buyCrypto(@RequestBody @Valid CryptoInputDTO input) {
+    public ResponseEntity<BoughtCryptoOutput> buyCrypto(@RequestBody @Valid CryptoInputDTO input) {
         if (input.getAmount() <= 0.0) {
             throw new IllegalArgumentException("Error: invalid amount, must be greater than 0.0");
         }
 
-        UserCrypto bought = walletService.buyCrypto(input.getAssetID(), input.getAmount());
-        return new ResponseEntity<>(userCryptoMapper.userCryptoToUserCryptoDTO(bought), HttpStatus.OK);
+        var bought = walletService.buyCrypto(input.getAssetID(), input.getAmount());
+        return new ResponseEntity<>(bought, HttpStatus.OK);
     }
 
     @PostMapping("/sell")
-    public ResponseEntity<UserCryptoDTO> sellCrypto(@RequestBody @Valid CryptoInputDTO input) {
+    public ResponseEntity<SoldCryptoOutput> sellCrypto(@RequestBody @Valid CryptoInputDTO input) {
         if (input.getAmount() <= 0.0) {
             throw new IllegalArgumentException("Error: invalid amount, must be greater than 0.0");
         }
 
-        UserCrypto bought = walletService.sellCrypto(input.getAssetID(), input.getAmount());
-        return new ResponseEntity<>(userCryptoMapper.userCryptoToUserCryptoDTO(bought), HttpStatus.OK);
+        var sold = walletService.sellCrypto(input.getAssetID(), input.getAmount());
+        return new ResponseEntity<>(sold, HttpStatus.OK);
     }
 }

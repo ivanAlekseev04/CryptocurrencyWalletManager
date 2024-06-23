@@ -1,6 +1,8 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.AssetNotFoundException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.InsufficientFundsException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.CryptoMapper;
@@ -85,7 +87,7 @@ public class WalletServiceImpl implements WalletService {
         return asset.get();
     }
 
-    public UserCrypto buyCrypto(String assetID, Double amount) {
+    public BoughtCryptoOutput buyCrypto(String assetID, Double amount) {
         CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
         double assetCost = wantedAsset.price() * amount;
@@ -106,10 +108,11 @@ public class WalletServiceImpl implements WalletService {
         userRepository.save(curUser);
         log.info("Updating existing amount of money for user {}, after the transaction", curUser.getUserName());
 
-        return updatedCryptoBalance;
+        return new BoughtCryptoOutput(curUser.getUserName(), assetID, "You have successfully bought " + amount + " of " + assetID,
+                amount, existedCryptoCurrency.getPrice());
     }
 
-    public UserCrypto sellCrypto(String assetID, Double amount) {
+    public SoldCryptoOutput sellCrypto(String assetID, Double amount) {
         CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
         Optional<UserCrypto> userCrypto = userCryptoRepository.findByCryptoNameAndUserId(assetID, curUserId());
@@ -150,9 +153,18 @@ public class WalletServiceImpl implements WalletService {
         log.info("Updating user {} overall profit after selling {} of {}", curUser.getUserName(), amount, assetID);
         userRepository.save(curUser);
 
-        userCrypto.get().setAmount(userCrypto.get().getAmount() - amount);
-        log.info("Updating the amount of asset {} after selling {} of it", assetID, amount);
-        return userCryptoRepository.save(userCrypto.get());
+        if (userCrypto.get().getAmount().doubleValue() != amount) {
+            userCrypto.get().setAmount(userCrypto.get().getAmount() - amount);
+            log.info("Updating the amount of asset {} after selling {} of it", assetID, amount);
+            userCryptoRepository.save(userCrypto.get());
+        }
+        else {
+            userCryptoRepository.delete(userCrypto.get());
+            log.info("Deleting user_crypto when selling all amount of {}", assetID);
+        }
+
+        return new SoldCryptoOutput(curUser.getUserName(), assetID, "You have successfully sold " + amount + " of " + assetID,
+                amount, sellingProfit);
     }
 
     private Long curUserId() {

@@ -1,6 +1,8 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.usercrypto.UserCrypto;
 
@@ -10,7 +12,7 @@ public interface WalletService {
     Set<CryptoInformation> listOfferings(String assetType);
     CryptoInformation listOfferingsCertainAsset(String assetID);
     User depositMoney(Double amount);
-    UserCrypto buyCrypto(String assetID, Double amount);
+    BoughtCryptoOutput buyCrypto(String assetID, Double amount);
 
-    UserCrypto sellCrypto(String assetID, Double amount);
+    SoldCryptoOutput sellCrypto(String assetID, Double amount);
 }
