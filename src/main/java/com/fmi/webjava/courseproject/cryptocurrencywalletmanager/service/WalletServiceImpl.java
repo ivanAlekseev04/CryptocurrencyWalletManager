@@ -2,6 +2,7 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.AssetNotFoundException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.InsufficientFundsException;
@@ -24,6 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -165,6 +168,41 @@ public class WalletServiceImpl implements WalletService {
 
         return new SoldCryptoOutput(curUser.getUserName(), assetID, "You have successfully sold " + amount + " of " + assetID,
                 amount, sellingProfit);
+    }
+
+    @Override
+    public Set<GetWalletSummaryOutput> wallet_summary(String assetID) {
+        Set<GetWalletSummaryOutput> out = new HashSet<>();
+
+        if (assetID == null) {
+            var wallet = userCryptoRepository.findByUserId(curUserId());
+            if (wallet.isEmpty()) {
+                log.info("User {} hasn't bought any assets, returning empty set", currUserName());
+                return Collections.emptySet();
+            }
+
+            for (var userCrypto : wallet.get()) {
+                CryptoInformation wantedAsset = getCryptoInformationIfAvailable(userCrypto.getId().getCryptoName());
+                Double currProfit = userCrypto.getAmount() * (wantedAsset.price() - userCrypto.getAverageCryptoBuyingPrice());
+
+                out.add(new GetWalletSummaryOutput(userCrypto.getId().getCryptoName(),
+                        userCrypto.getAmount(), wantedAsset.price(), currProfit));
+            }
+            log.info("Returning all active investments for user {}", currUserName());
+            return out;
+        }
+
+        CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
+        var wallet = userCryptoRepository.findByCryptoNameAndUserId(assetID, curUserId());
+        if (wallet.isEmpty()) {
+            log.info("User {} hasn't bought any asset with id {}, returning empty set", currUserName(), assetID);
+            return Collections.emptySet();
+        }
+        var res = new GetWalletSummaryOutput(assetID, wallet.get().getAmount(), wantedAsset.price(),
+                wallet.get().getAmount() * (wantedAsset.price() - wallet.get().getAverageCryptoBuyingPrice()));
+
+        log.info("Returning active investment for user {} and asset {}", currUserName(), assetID);
+        return Set.of(res);
     }
 
     private Long curUserId() {

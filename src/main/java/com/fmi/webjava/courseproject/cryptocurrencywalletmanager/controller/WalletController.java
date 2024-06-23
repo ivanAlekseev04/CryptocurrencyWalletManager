@@ -3,13 +3,12 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.controller;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCryptoOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoInputDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserCryptoDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryptoMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.usercrypto.UserCrypto;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -97,5 +96,12 @@ public class WalletController {
 
         var sold = walletService.sellCrypto(input.getAssetID(), input.getAmount());
         return new ResponseEntity<>(sold, HttpStatus.OK);
+    }
+
+    @GetMapping("/wallet_summary")
+    public ResponseEntity<Set<GetWalletSummaryOutput>> getWalletSummary(@RequestParam(value = "asset_name", required = false) String assetName) {
+        Set<GetWalletSummaryOutput> wallet = walletService.wallet_summary(assetName);
+
+        return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 }
