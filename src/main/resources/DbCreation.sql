@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.crypto
 CREATE TABLE IF NOT EXISTS public.shedlock
 (
     name character varying(64) COLLATE pg_catalog."default" NOT NULL,
-    locked_until timestamp(3) without time zone,
+    lock_until timestamp(3) without time zone,
     locked_at timestamp(3) without time zone,
     locked_by character varying(255) COLLATE pg_catalog."default",
     CONSTRAINT shedlock_pkey PRIMARY KEY (name)

@@ -1,10 +1,14 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.controller;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BuyCryptoInputDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserCryptoDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryptoMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.usercrypto.UserCrypto;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletServiceImpl;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -58,18 +62,29 @@ public class WalletController {
         return new ResponseEntity<>(asset, HttpStatus.OK);
     }
 
-    @PostMapping("/deposit_money/{amount}")
-    public ResponseEntity<Map<String, Double>> depositMoney(@PathVariable("amount") Double amount) {
-        var incrementedBalance = Map.of("money", walletService.depositMoney(amount).getMoney());
+    @PatchMapping("/deposit_money")
+    public ResponseEntity<UserDTOOutput> depositMoney(@RequestBody Map<String, Double> depositedMoney) {
+        if (!depositedMoney.containsKey("money")) {
+            throw new IllegalArgumentException("Error: invalid request body. Body should contain money declaration");
+        }
 
-        return new ResponseEntity<>(incrementedBalance, HttpStatus.OK);
+        Double money = depositedMoney.get("money");
+        if (money <= 0.0) {
+            throw new IllegalArgumentException("Error: you can not deposit negative amount of money");
+        }
+
+        User updatedUser = walletService.depositMoney(money);
+        UserDTOOutput out = userMapper.userToUserDTOOutput(updatedUser);
+        return new ResponseEntity<>(out, HttpStatus.OK);
     }
 
-    @PostMapping("/buy/{amount}")
-    public ResponseEntity<UserCryptoDTO> buyCrypto(@PathVariable("amount") Double amount, // TODO: UserCryptoDTO
-                                                   @RequestBody @Valid CryptoDTO cryptoDTO) {
+    @PostMapping("/buy")
+    public ResponseEntity<UserCryptoDTO> buyCrypto(@RequestBody @Valid BuyCryptoInputDTO input) {
+        if (input.getAmount() <= 0.0) {
+            throw new IllegalArgumentException("Error: invalid amount, must be greater than 0.0");
+        }
 
-        return new ResponseEntity<>(userCryptoMapper.userCryptoToUserCryptoDTO(
-                walletService.buyCrypto(cryptoDTO, amount)), HttpStatus.OK);
+        UserCrypto bought = walletService.buyCrypto(input.getAssetID(), input.getAmount());
+        return new ResponseEntity<>(userCryptoMapper.userCryptoToUserCryptoDTO(bought), HttpStatus.OK);
     }
 }

@@ -36,9 +36,4 @@ public class Crypto {
     @NotNull(message = "Crypto: price can't be null")
     @Min(value = 0, message = "Crypto: price cannot be negative")
     private Double price;
-
-    @Valid
-    @OneToMany(mappedBy = "crypto")
-    @Builder.Default
-    private Set<Transaction> transactions = new HashSet<>();
 }
