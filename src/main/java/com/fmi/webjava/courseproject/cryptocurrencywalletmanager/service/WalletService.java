@@ -11,4 +11,6 @@ public interface WalletService {
     CryptoInformation listOfferingsCertainAsset(String assetID);
     User depositMoney(Double amount);
     UserCrypto buyCrypto(String assetID, Double amount);
+
+    UserCrypto sellCrypto(String assetID, Double amount);
 }

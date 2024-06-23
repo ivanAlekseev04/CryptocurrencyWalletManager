@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class BuyCryptoInputDTO {
+public class CryptoInputDTO {
     @NotNull
     @NotBlank
     private String assetID;

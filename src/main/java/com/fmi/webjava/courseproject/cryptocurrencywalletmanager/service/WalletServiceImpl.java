@@ -1,8 +1,6 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
 
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.coinapi.CryptoInformation;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoDTO;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.AssetNotFoundException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception.InsufficientFundsException;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.CryptoMapper;
@@ -88,39 +86,21 @@ public class WalletServiceImpl implements WalletService {
     }
 
     public UserCrypto buyCrypto(String assetID, Double amount) {
-        Optional<CryptoInformation> wantedAsset = coinApiService.getCrypto().stream()
-                .filter(currAsset -> currAsset.assetID().equals(assetID))
-                .findFirst();
+        CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
-        if (wantedAsset.isEmpty()) {
-            log.info("Searching for unavailable asset with id {}", assetID);
-            throw new AssetNotFoundException("Error: Asset with id " + assetID + " is not currently available");
-        }
-
-        double assetCost = wantedAsset.get().price() * amount;
+        double assetCost = wantedAsset.price() * amount;
         User curUser = userRepository.findById(curUserId()).orElseThrow(() -> new IllegalArgumentException("User " + currUserName() + " is not presented"));
         if (curUser.getMoney() < assetCost) {
             log.info("User {} doesn't have enough amount of money", curUser.getUserName());
             throw new InsufficientFundsException("Error: Invalid operation. User " + currUserName() + " doesn't have enough amount of money");
         }
 
-        var existedCryptoCurrency = cryptoRepository.findByNameAndPrice(assetID, wantedAsset.get().price());
-
-        if (existedCryptoCurrency.isEmpty()) {
-            log.info("There is not cryptocurrency with name {} and price {} in crypto table", assetID, wantedAsset.get().price());
-            Crypto newCrypto = Crypto.builder()
-                    .name(assetID)
-                    .price(wantedAsset.get().price())
-                    .build();
-
-            existedCryptoCurrency = Optional.of(cryptoRepository.save(newCrypto));
-            log.info("Saving new crypto {} to crypto table", newCrypto.toString());
-        }
+        var existedCryptoCurrency = checkIfCryptoIsAvailable(assetID, wantedAsset.price());
 
         var boughtCryptoCurrency = userCryptoRepository.findById(new UserCryptoId(curUser.getId(), assetID));
 
         var updatedCryptoBalance = depositCryptoToAccount(boughtCryptoCurrency.orElse(null),
-                existedCryptoCurrency.get(), amount, curUser);
+                existedCryptoCurrency, amount, curUser);
 
         curUser.setMoney(curUser.getMoney() - assetCost);
         userRepository.save(curUser);
@@ -129,39 +109,50 @@ public class WalletServiceImpl implements WalletService {
         return updatedCryptoBalance;
     }
 
-//    public UserCrypto buyCrypto(CryptoDTO cryptoDTO, Double amount) {
-//        User curUser = userRepository.findById(curUserId()).get();
-//        Double overallPrice = amount * cryptoDTO.getPrice();
-//
-//        if(curUser.getMoney() < overallPrice) {
-//            throw new InsufficientFundsException(String.format("User '%s'" +
-//                    " doesn't have enough money to buy crypto", curUser.getUserName()));
-//        }
-//
-//        // FIXME: according to normal flow this data will be got from Set with actual cryptocurrencies, but later
-//        var existedCryptoCurrency = cryptoRepository.findByNameAndPrice(
-//                cryptoDTO.getName(), cryptoDTO.getPrice());
-//
-//        if(existedCryptoCurrency.isEmpty()) {
-//            existedCryptoCurrency = Optional.of(cryptoRepository.
-//                    save(cryptoMapper.cryptoDTOToCrypto(cryptoDTO)));
-//        }
-//
-//        var boughtCryptoCurrency = userCryptoRepository.findById(
-//                new UserCryptoId(curUser.getId(), cryptoDTO.getName()));
-//
-//        var updatedCryptoBalance = depositCryptoToAccount(boughtCryptoCurrency.orElse(null),
-//                existedCryptoCurrency.get(), amount, curUser);
-//
-//        curUser.setMoney(curUser.getMoney() - overallPrice);
-//        userRepository.save(curUser);
-//
-//        return updatedCryptoBalance;
-//    }
+    public UserCrypto sellCrypto(String assetID, Double amount) {
+        CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
-    // TODO: implement
-    public void sellCrypto() {
+        Optional<UserCrypto> userCrypto = userCryptoRepository.findByCryptoNameAndUserId(assetID, curUserId());
+        if (userCrypto.isEmpty()) {
+            log.error("Error trying to sell asset {} without already bought it", assetID);
+            throw new AssetNotFoundException("Error: You can not sell asset " + assetID + " without already bought it");
+        }
 
+        if (userCrypto.get().getAmount() < amount) {
+            log.error("Error trying to sell more amount of asset {} than already have bought", assetID);
+            throw new IllegalArgumentException("Error: You can not sell more amount of asset " + assetID + " than you have already bought");
+        }
+
+        Crypto existedCryptocurrency = checkIfCryptoIsAvailable(assetID, wantedAsset.price());
+        User curUser = userRepository.findById(curUserId()).
+                orElseThrow(() -> new IllegalArgumentException("User " + currUserName() + " is not presented"));
+
+        Double currAssetPrice = wantedAsset.price();
+        Double moneyEarn = currAssetPrice * amount;
+        Double sellingProfit = amount * (currAssetPrice - userCrypto.get().getAverageCryptoBuyingPrice());
+
+        transactionRepository.save(Transaction.builder()
+                .crypto(existedCryptocurrency)
+                .dateOfCommit(LocalDateTime.now())
+                .user(curUser)
+                .amount(amount)
+                .type(TransactionType.SOLD.toString())
+                .sellingProfit(sellingProfit)
+                .build());
+
+        log.info("Creating selling transaction for user {}, crypto {}, amount {}, profit {}",
+                curUser.getUserName(), existedCryptocurrency.getName(), amount, sellingProfit);
+
+
+        curUser.setMoney(curUser.getMoney() + moneyEarn);
+        log.info("Updating user {} amount of money after selling {} of {}", curUser.getUserName(), amount, assetID);
+        curUser.setOverallTransactionsProfit(curUser.getOverallTransactionsProfit() + sellingProfit);
+        log.info("Updating user {} overall profit after selling {} of {}", curUser.getUserName(), amount, assetID);
+        userRepository.save(curUser);
+
+        userCrypto.get().setAmount(userCrypto.get().getAmount() - amount);
+        log.info("Updating the amount of asset {} after selling {} of it", assetID, amount);
+        return userCryptoRepository.save(userCrypto.get());
     }
 
     private Long curUserId() {
@@ -179,6 +170,36 @@ public class WalletServiceImpl implements WalletService {
                                                  Crypto crypto, Double amount) {
         return (crypto.getPrice() * amount +
                 (userCrypto.getAverageCryptoBuyingPrice() * userCrypto.getAmount())) / (amount + userCrypto.getAmount());
+    }
+
+    private CryptoInformation getCryptoInformationIfAvailable(String assetID) {
+        Optional<CryptoInformation> wantedAsset = coinApiService.getCrypto().stream()
+                .filter(currAsset -> currAsset.assetID().equals(assetID))
+                .findFirst();
+
+        if (wantedAsset.isEmpty()) {
+            log.info("Searching for unavailable asset with id {}", assetID);
+            throw new AssetNotFoundException("Error: Asset with id " + assetID + " is not currently available");
+        }
+
+        return wantedAsset.get();
+    }
+
+    private Crypto checkIfCryptoIsAvailable(String assetID, Double price) {
+        var existedCryptoCurrency = cryptoRepository.findByNameAndPrice(assetID, price);
+
+        if (existedCryptoCurrency.isEmpty()) {
+            log.info("There is not cryptocurrency with name {} and price {} in crypto table", assetID, price);
+            Crypto newCrypto = Crypto.builder()
+                    .name(assetID)
+                    .price(price)
+                    .build();
+
+            existedCryptoCurrency = Optional.of(cryptoRepository.save(newCrypto));
+            log.info("Saving new crypto {} to crypto table", newCrypto.toString());
+        }
+
+        return existedCryptoCurrency.get();
     }
 
     private UserCrypto depositCryptoToAccount(UserCrypto userCrypto, Crypto crypto
