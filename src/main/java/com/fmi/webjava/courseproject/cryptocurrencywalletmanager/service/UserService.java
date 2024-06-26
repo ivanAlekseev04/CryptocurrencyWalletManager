@@ -7,4 +7,5 @@ public interface UserService {
     User register(User user);
     void login(User user, HttpSession session);
     User updateCredentials(User user);
+    void logout();
 }

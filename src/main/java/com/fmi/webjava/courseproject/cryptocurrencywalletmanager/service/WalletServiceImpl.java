@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -217,6 +218,52 @@ public class WalletServiceImpl implements WalletService {
                 currUser.getOverallTransactionsProfit(), walletSummary);
     }
 
+    @Override
+    public List<Transaction> getTransactionHistory(String type, String assetId) {
+        List<Transaction> transactions;
+
+        if (type.isEmpty() && assetId == null) {
+            log.info("Extracting all transactions for user {}", curUserId());
+            transactions = transactionRepository.findAllTransactionsForUser(curUserId());
+        }
+        else if (type.isEmpty() && assetId != null) {
+            CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetId);
+            log.info("Extracting all transactions for user {} with assetID {}", curUserId(), assetId);
+            transactions = transactionRepository.findTransactionByAssetId(curUserId(), assetId);
+        }
+        else if (!type.isEmpty() && assetId == null) {
+            log.info("Extracting all transactions for user {} of type {}", curUserId(), type);
+            transactions = transactionRepository.findTransactionsByType(curUserId(), type);
+        }
+        else {
+            CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetId);
+            log.info("Extracting all transactions for user {} of type {} for crypto {}", curUserId(), type, assetId);
+            transactions = transactionRepository.findTransactionByAssetAndType(curUserId(), assetId, type);
+        }
+
+        return transactions;
+    }
+
+    @Override
+    public List<Transaction> getTransactionHistoryWithinPeriod(LocalDateTime before, LocalDateTime after) {
+        List<Transaction> transactions;
+
+        if (before == null && after == null) {
+            transactions = transactionRepository.findAllTransactionsForUser(curUserId());
+        }
+        else if (before != null && after == null) {
+            transactions = transactionRepository.findTransactionBefore(curUserId(), before);
+        }
+        else if (before == null && after != null) {
+            transactions = transactionRepository.findTransactionAfter(curUserId(), after);
+        }
+        else {
+            transactions = transactionRepository.findTransactionBetween(curUserId(), before, after);
+        }
+
+        return transactions;
+    }
+
     private Long curUserId() {
         var curUser = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
@@ -296,4 +343,5 @@ public class WalletServiceImpl implements WalletService {
 
         return result;
     }
+
 }

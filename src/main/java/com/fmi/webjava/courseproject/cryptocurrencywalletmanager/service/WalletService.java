@@ -5,10 +5,11 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.BoughtCrypt
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletOverallSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserCryptoDTO;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.Transaction;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.usercrypto.UserCrypto;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public interface WalletService {
@@ -19,4 +20,6 @@ public interface WalletService {
     SoldCryptoOutput sellCrypto(String assetID, Double amount);
     Set<GetWalletSummaryOutput> wallet_summary(String assetID);
     GetWalletOverallSummaryOutput wallet_overall_summary();
+    List<Transaction> getTransactionHistory(String type, String assetId);
+    List<Transaction> getTransactionHistoryWithinPeriod(LocalDateTime before, LocalDateTime after);
 }

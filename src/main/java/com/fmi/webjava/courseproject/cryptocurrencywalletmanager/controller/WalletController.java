@@ -6,11 +6,15 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.CryptoInput
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletOverallSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.GetWalletSummaryOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.SoldCryptoOutput;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.TransactionDTO;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.TransactionMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryptoMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletService;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletServiceImpl;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.util.TransactionType;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,11 +33,13 @@ import java.util.Set;
 @RequestMapping("/wallet")
 public class WalletController {
     @Autowired
-    private WalletServiceImpl walletService;
+    private WalletService walletService;
     @Autowired
     private UserMapper userMapper;
     @Autowired
     private UserCryptoMapper userCryptoMapper;
+    @Autowired
+    private TransactionMapper transactionMapper;
 
     @GetMapping("/list_offerings")
     public ResponseEntity<Set<CryptoInformation>> listOfferings(@RequestParam(value = "asset_type", required = false) String assetType) {
@@ -111,5 +119,33 @@ public class WalletController {
         GetWalletOverallSummaryOutput wallet = walletService.wallet_overall_summary();
 
         return new ResponseEntity<>(wallet, HttpStatus.OK);
+    }
+
+    @GetMapping("/wallet_history")
+    public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "type", required = false)String type,
+                                                             @RequestParam(value = "asset_id", required = false) String assetId) {
+        String transactionType = "";
+
+        if (type != null && type.equals("bought")) {
+            transactionType = "BOUGHT";
+        }
+        else if (type != null && type.equals("sold")) {
+            transactionType = "SOLD";
+        }
+        else if (type != null) {
+            log.info("Invalid option for type: valid ones - bought/sold, chosen {}", type);
+            throw new IllegalArgumentException("Invalid options for type: valid ones are bought/sold");
+        }
+
+        return new ResponseEntity<>(transactionMapper.transactionListToTransactionDTOList(walletService.getTransactionHistory(transactionType, assetId)),
+                HttpStatus.OK);
+    }
+
+    @GetMapping("/wallet_history/period")
+    public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "before", required = false)LocalDateTime before,
+                                                                   @RequestParam(value = "after", required = false)LocalDateTime after) {
+
+        return new ResponseEntity<>(transactionMapper.transactionListToTransactionDTOList(walletService.getTransactionHistoryWithinPeriod(before, after)),
+                HttpStatus.OK);
     }
 }

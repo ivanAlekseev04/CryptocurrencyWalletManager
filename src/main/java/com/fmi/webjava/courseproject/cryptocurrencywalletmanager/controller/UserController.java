@@ -4,7 +4,7 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOInpu
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto.UserDTOOutput;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.UserServiceImpl;
+import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class UserController {
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
     @Autowired
     private UserMapper userMapper;
 
@@ -87,10 +87,10 @@ public class UserController {
         return new ResponseEntity<>(userMapper.userToUserDTOOutput(updatedUser), HttpStatus.OK);
     }
 
-    @DeleteMapping("user/delete")
-    public final ResponseEntity<Void> deleteUser() {
-        userService.deleteUser();
-
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("user/delete")
+//    public final ResponseEntity<Void> deleteUser() {
+//        userService.deleteUser();
+//
+//        return ResponseEntity.noContent().build();
+//    }
 }
