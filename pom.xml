@@ -74,6 +74,11 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>8.0.1.Final</version>
 		</dependency>
+		<dependency> <!--This was added-->
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 
 		<!--Spring security-->
 		<dependency>
@@ -98,6 +103,32 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>2.0.12</version>
 <!--			<scope>test</scope>-->
+		</dependency>
+
+<!--		CronJob dependency-->
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-spring</artifactId>
+			<version>5.13.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.javacrumbs.shedlock</groupId>
+			<artifactId>shedlock-provider-jdbc-template</artifactId>
+			<version>5.13.0</version>
+		</dependency>
+
+<!--		Json deserialize-->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.11.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.3.1</version>
 		</dependency>
 
 	</dependencies>

@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class TransactionDTO {
+    private Long id;
+
+    @NotNull
     private Double sellingProfit;
 
     @NotNull(message = "TransactionDTO: dateOfCommit cannot be null")

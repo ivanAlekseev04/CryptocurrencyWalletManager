@@ -2,16 +2,14 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@Setter
-@ToString
+@Data
 public class UserCryptoIdDTO {
+    @NotNull
+    private Long userId;
 
-    @NotNull(message = "UserCryptoIdDTO: cryptoName cannot be null")
-    @NotBlank(message = "UserCryptoIdDTO: cryptoName need to have minimum 1 non-white space character")
+    @NotNull
+    @NotBlank
     private String cryptoName;
 }
