@@ -32,7 +32,7 @@ public class CoinApi {
     private static final String API_ENDPOINT_HOST = "rest.coinapi.io";
     private static final String API_ENDPOINT_PATH = "/v1/assets";
     private static final String API_HEADER_TEXT = "X-CoinAPI-Key";
-    private static final String API_KEY = ""; //Set your api key
+    private static final String API_KEY = "AC1A567B-A444-468B-8A8A-85B3EBEB68F4"; //Set your api key
     private static final Integer MAX_CRYPTOCURRENCIES = 200;
     private static final Gson GSON = new Gson();
 

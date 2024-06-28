@@ -51,6 +51,7 @@ public class WalletServiceImpl implements WalletService {
     @Autowired
     private CoinApiService coinApiService;
 
+    //TODO: case when there is no user with this ID in DB
     public User depositMoney(Double amount) {
         User curUser = userRepository.findById(curUserId()).get();
         curUser.setMoney(curUser.getMoney() + amount);
@@ -61,6 +62,10 @@ public class WalletServiceImpl implements WalletService {
     }
 
     public Set<CryptoInformation> listOfferings(String assetType) {
+        if(assetType == null) {
+            log.info("User {} requested crypto and coins assets", currUserName());
+            return new HashSet<>(coinApiService.getCrypto());
+        }
         if (assetType.equals("crypto")) {
             log.info("User {} requested crypto assets", currUserName());
             return coinApiService.getCrypto().stream()
@@ -96,10 +101,13 @@ public class WalletServiceImpl implements WalletService {
         CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
         double assetCost = wantedAsset.price() * amount;
-        User curUser = userRepository.findById(curUserId()).orElseThrow(() -> new IllegalArgumentException("User " + currUserName() + " is not presented"));
+        User curUser = userRepository.findById(curUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User " + currUserName() + " is not presented"));
+
         if (curUser.getMoney() < assetCost) {
             log.info("User {} doesn't have enough amount of money", curUser.getUserName());
-            throw new InsufficientFundsException("Error: Invalid operation. User " + currUserName() + " doesn't have enough amount of money");
+            throw new InsufficientFundsException("Error: Invalid operation. User "
+                    + currUserName() + " doesn't have enough amount of money");
         }
 
         var existedCryptoCurrency = checkIfCryptoIsAvailable(assetID, wantedAsset.price());
@@ -113,7 +121,8 @@ public class WalletServiceImpl implements WalletService {
         userRepository.save(curUser);
         log.info("Updating existing amount of money for user {}, after the transaction", curUser.getUserName());
 
-        return new BoughtCryptoOutput(curUser.getUserName(), assetID, "You have successfully bought " + amount + " of " + assetID,
+        return new BoughtCryptoOutput(curUser.getUserName(), assetID,
+                "You have successfully bought " + amount + " of " + assetID,
                 amount, existedCryptoCurrency.getPrice());
     }
 
@@ -222,16 +231,16 @@ public class WalletServiceImpl implements WalletService {
     public List<Transaction> getTransactionHistory(String type, String assetId) {
         List<Transaction> transactions;
 
-        if (type.isEmpty() && assetId == null) {
+        if (type == null && assetId == null) {
             log.info("Extracting all transactions for user {}", curUserId());
             transactions = transactionRepository.findAllTransactionsForUser(curUserId());
         }
-        else if (type.isEmpty() && assetId != null) {
+        else if (type == null && assetId != null) {
             CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetId);
             log.info("Extracting all transactions for user {} with assetID {}", curUserId(), assetId);
             transactions = transactionRepository.findTransactionByAssetId(curUserId(), assetId);
         }
-        else if (!type.isEmpty() && assetId == null) {
+        else if (type != null && assetId == null) {
             log.info("Extracting all transactions for user {} of type {}", curUserId(), type);
             transactions = transactionRepository.findTransactionsByType(curUserId(), type);
         }

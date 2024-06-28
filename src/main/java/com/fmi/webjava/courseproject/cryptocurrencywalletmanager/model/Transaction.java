@@ -2,6 +2,7 @@ package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -31,7 +32,7 @@ public class Transaction {
     private LocalDateTime dateOfCommit;
 
     @NotNull(message = "Transaction: amount of crypto cannot be null")
-    @Min(value = 0, message = "Transaction: cannot perform transaction with a negative crypto amount")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Transaction: amount need to be greater than 0.0")
     private Double amount;
 
     @NotNull(message = "Transaction: transaction type cannot be null")

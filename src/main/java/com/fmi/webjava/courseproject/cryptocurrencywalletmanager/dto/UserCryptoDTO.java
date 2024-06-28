@@ -1,5 +1,6 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.dto;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -11,6 +12,6 @@ public class UserCryptoDTO {
     private UserCryptoIdDTO id;
 
     @NotNull
-    @Min(value = 0)
+    @DecimalMin(value = "0.0")
     private Double amount;
 }

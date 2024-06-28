@@ -24,9 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -43,20 +41,16 @@ public class WalletController {
 
     @GetMapping("/list_offerings")
     public ResponseEntity<Set<CryptoInformation>> listOfferings(@RequestParam(value = "asset_type", required = false) String assetType) {
-        String type = "";
-        if (assetType != null && assetType.equals("coins")) {
-            type = "coins";
-        }
-        else if (assetType != null && assetType.equals("crypto")) {
-            type = "crypto";
-        }
-        else if (assetType != null) {
+        var allowedTypes = List.of("coins", "crypto");
+
+        if (assetType != null && Collections.disjoint(allowedTypes, List.of(assetType))) {
             log.info("Invalid option for asset_type: valid ones - crypto/coins, chosen {}", assetType);
             throw new IllegalArgumentException("Invalid options for asset_type: valid ones are crypto/coins");
         }
 
-        Set<CryptoInformation> assets = walletService.listOfferings(type);
+        Set<CryptoInformation> assets = walletService.listOfferings(assetType);
         log.info("Returning assets to user {}", SecurityContextHolder.getContext().getAuthentication().getName());
+
         return new ResponseEntity<>(assets, HttpStatus.OK);
     }
 
@@ -89,26 +83,21 @@ public class WalletController {
 
     @PostMapping("/buy")
     public ResponseEntity<BoughtCryptoOutput> buyCrypto(@RequestBody @Valid CryptoInputDTO input) {
-        if (input.getAmount() <= 0.0) {
-            throw new IllegalArgumentException("Error: invalid amount, must be greater than 0.0");
-        }
-
         var bought = walletService.buyCrypto(input.getAssetID(), input.getAmount());
+
         return new ResponseEntity<>(bought, HttpStatus.OK);
     }
 
     @PostMapping("/sell")
     public ResponseEntity<SoldCryptoOutput> sellCrypto(@RequestBody @Valid CryptoInputDTO input) {
-        if (input.getAmount() <= 0.0) {
-            throw new IllegalArgumentException("Error: invalid amount, must be greater than 0.0");
-        }
-
         var sold = walletService.sellCrypto(input.getAssetID(), input.getAmount());
+
         return new ResponseEntity<>(sold, HttpStatus.OK);
     }
 
     @GetMapping("/wallet_summary")
-    public ResponseEntity<Set<GetWalletSummaryOutput>> getWalletSummary(@RequestParam(value = "asset_name", required = false) String assetName) {
+    public ResponseEntity<Set<GetWalletSummaryOutput>> getWalletSummary(@RequestParam(
+            value = "asset_name", required = false) String assetName) {
         Set<GetWalletSummaryOutput> wallet = walletService.wallet_summary(assetName);
 
         return new ResponseEntity<>(wallet, HttpStatus.OK);
@@ -122,30 +111,27 @@ public class WalletController {
     }
 
     @GetMapping("/wallet_history")
-    public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "type", required = false)String type,
+    public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "type", required = false) String type,
                                                              @RequestParam(value = "asset_id", required = false) String assetId) {
-        String transactionType = "";
+        var allowedTypes = Arrays.stream(TransactionType.values())
+                .map(Enum::toString).toList();
 
-        if (type != null && type.equals("bought")) {
-            transactionType = "BOUGHT";
-        }
-        else if (type != null && type.equals("sold")) {
-            transactionType = "SOLD";
-        }
-        else if (type != null) {
+        if (type != null && Collections.disjoint(allowedTypes, List.of(type))) {
             log.info("Invalid option for type: valid ones - bought/sold, chosen {}", type);
             throw new IllegalArgumentException("Invalid options for type: valid ones are bought/sold");
         }
 
-        return new ResponseEntity<>(transactionMapper.transactionListToTransactionDTOList(walletService.getTransactionHistory(transactionType, assetId)),
-                HttpStatus.OK);
+        return new ResponseEntity<>(transactionMapper.
+                transactionListToTransactionDTOList(walletService.
+                        getTransactionHistory(type, assetId)), HttpStatus.OK);
     }
 
     @GetMapping("/wallet_history/period")
     public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "before", required = false)LocalDateTime before,
                                                                    @RequestParam(value = "after", required = false)LocalDateTime after) {
 
-        return new ResponseEntity<>(transactionMapper.transactionListToTransactionDTOList(walletService.getTransactionHistoryWithinPeriod(before, after)),
-                HttpStatus.OK);
+        return new ResponseEntity<>(transactionMapper.
+                transactionListToTransactionDTOList(walletService.
+                        getTransactionHistoryWithinPeriod(before, after)), HttpStatus.OK);
     }
 }

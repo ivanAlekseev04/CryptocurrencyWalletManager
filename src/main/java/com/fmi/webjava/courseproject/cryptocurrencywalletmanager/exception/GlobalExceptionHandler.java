@@ -1,21 +1,23 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.List;//package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.exception;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -80,13 +82,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex) {
-        //var errorMessage = Map.of(ex.getConstraintName(), ex.getErrorMessage());
-        var errorMessage = Map.of("message", ex.getConstraintViolations()
+    public ResponseEntity<Map<String, List<String>>> handleConstraintViolationException(ConstraintViolationException ex) {
+        var errorMessage = Map.of("errors", ex.getConstraintViolations()
                 .stream()
                 .map(cv -> cv.getMessage())
-                .findFirst()
-                .orElse("Validation error"));
+                .collect(Collectors.toList()));
 
         log.error(errorMessage.toString());
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);

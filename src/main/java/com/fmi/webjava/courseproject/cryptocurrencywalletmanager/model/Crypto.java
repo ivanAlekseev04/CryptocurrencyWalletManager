@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,6 +35,6 @@ public class Crypto {
     private String name;
 
     @NotNull(message = "Crypto: price can't be null")
-    @Min(value = 0, message = "Crypto: price cannot be negative")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Crypto: price need to be greater than 0.0")
     private Double price;
 }

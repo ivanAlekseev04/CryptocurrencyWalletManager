@@ -6,6 +6,7 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.security.userde
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,7 +30,6 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AuthenticationManager authenticationManager;
-
     private static final int MAX_PASSWORD_LENGTH = 256;
 
     public User register(User user) {
@@ -102,14 +102,6 @@ public class UserServiceImpl implements UserService {
 
         log.info("User '{}' was updated successfully", oldName);
         return userRepository.save(toUpdate.get());
-    }
-
-    public void deleteUser() {
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        userRepository.deleteByUserName(userName);
-
-        log.info("User '{}' was deleted successfully", userName);
-        logout();
     }
 
     public void logout() {
