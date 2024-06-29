@@ -1,12 +1,14 @@
 package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.security.userdetails;
 
 import lombok.Builder;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-@Builder
+@Builder(toBuilder = true)
+@Data
 public class CustomUserDetails implements UserDetails {
     private Long id;
     private String userName;

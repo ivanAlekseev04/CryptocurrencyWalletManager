@@ -1,6 +1,7 @@
+package com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service;
+
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.repository.UserRepository;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.UserServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;

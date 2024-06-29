@@ -51,7 +51,7 @@ public class WalletServiceImpl implements WalletService {
     @Autowired
     private CoinApiService coinApiService;
 
-    //TODO: case when there is no user with this ID in DB
+    @Override
     public User depositMoney(Double amount) {
         User curUser = userRepository.findById(curUserId()).get();
         curUser.setMoney(curUser.getMoney() + amount);
@@ -61,6 +61,7 @@ public class WalletServiceImpl implements WalletService {
         return curUser;
     }
 
+    @Override
     public Set<CryptoInformation> listOfferings(String assetType) {
         if(assetType == null) {
             log.info("User {} requested crypto and coins assets", currUserName());
@@ -83,6 +84,7 @@ public class WalletServiceImpl implements WalletService {
         return coinApiService.getCrypto();
     }
 
+    @Override
     public CryptoInformation listOfferingsCertainAsset(String assetID) {
         Optional<CryptoInformation> asset = coinApiService.getCrypto().stream()
                 .filter(currAsset -> currAsset.assetID().equals(assetID))
@@ -97,6 +99,7 @@ public class WalletServiceImpl implements WalletService {
         return asset.get();
     }
 
+    @Override
     public BoughtCryptoOutput buyCrypto(String assetID, Double amount) {
         CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
@@ -126,6 +129,7 @@ public class WalletServiceImpl implements WalletService {
                 amount, existedCryptoCurrency.getPrice());
     }
 
+    @Override
     public SoldCryptoOutput sellCrypto(String assetID, Double amount) {
         CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetID);
 
