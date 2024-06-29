@@ -12,6 +12,8 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +34,8 @@ public class CoinApi {
     private static final String API_ENDPOINT_HOST = "rest.coinapi.io";
     private static final String API_ENDPOINT_PATH = "/v1/assets";
     private static final String API_HEADER_TEXT = "X-CoinAPI-Key";
-    private static final String API_KEY = "AC1A567B-A444-468B-8A8A-85B3EBEB68F4"; //Set your api key
+    private static final String API_KEY = ""; //Set your api key
+
     private static final Integer MAX_CRYPTOCURRENCIES = 200;
     private static final Gson GSON = new Gson();
 
@@ -61,6 +64,7 @@ public class CoinApi {
         }
     }
 
+    @EventListener(ContextRefreshedEvent.class)
     @Scheduled(fixedRateString = "5", timeUnit = TimeUnit.MINUTES)
     @SchedulerLock(name = "CoinApi", lockAtLeastFor = "PT5M", lockAtMostFor = "PT6M")
     public void getCryptocurrencies() {
