@@ -1,0 +1,84 @@
+/* app.component.css */
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #bebebe; /* Example background color */
+    padding: 10px 20px; /* Adjust padding as needed */
+    z-index: 1000; /* Ensure navigation bar is above other content */
+  }
+
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-left {
+    display: flex;
+    gap: 10px; /* Adjust spacing between buttons */
+  }
+
+  .nav-button {
+    padding: 8px 15px;
+    border: none;
+    background-color: #555; /* Example button background color */
+    color: white;
+    border-radius: 20px; /* Rounded corners */
+    cursor: pointer;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-logo {
+    width: 40px; /* Adjust size of profile logo */
+    height: 40px;
+    border-radius: 50%; /* Make it round */
+    cursor: pointer;
+    margin-right: 2em;
+  }
+
+
+
+  main {
+      max-width: 800px;
+      margin: 0 auto;
+
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f0f0f0;
+      color: #333;
+      padding: 20px;
+      height: 100%;
+  }
+
+  .feature {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature h2 {
+      font-size: 1.8rem;
+      color: #333;
+      margin-bottom: 10px;
+  }
+
+  .feature p {
+      font-size: 1.1rem;
+      color: #666;
+  }
+
+  footer {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+      color: #666;
+  }

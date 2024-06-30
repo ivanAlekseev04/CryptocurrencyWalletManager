@@ -1,0 +1,23 @@
+<div class="body">
+  <div class="container">
+    <div class="auth-form">
+      <div class="form-header">
+        <h1>Register</h1>
+        <p>to create a wallet</p>
+      </div>
+      <form id="registrationForm" (ngSubmit)="onSubmit()">
+        <div class="input-group">
+          <input type="text" id="userName" name="userName" [(ngModel)]="user.userName">
+          <label for="userName">Username</label>
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" name="password" [(ngModel)]="user.password">
+          <label for="password">Password</label>
+        </div>
+        <button type="submit" id="register">Register</button>
+        <!--(click)="navigateTo('/login')"-->
+        <div *ngIf="errorMessage" class="error" [innerHTML]="errorMessage"></div>
+      </form>
+    </div>
+  </div>
+</div>

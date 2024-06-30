@@ -1,0 +1,119 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 45em;
+    background-color: #f5f5f5;
+}
+
+.error {
+    color: #D8000C;
+    background-color: #FFBABA;
+    border: 0.08em solid #D8000C;
+    padding: 1em;
+    border-radius: 0.5em;
+    font-size: 1.0em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-top: 5%;
+}
+
+.container {
+    background-color: white;
+    border-radius: 0.5em;
+    box-shadow: 0 0.125em 0.625em rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 22.5em;
+    padding: 2.5em;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-header h1 {
+    font-size: 1.5em;
+    margin-top: 1em;
+}
+
+.form-header p {
+    color: #666;
+    margin-bottom: 1.5em;
+    font-size: 1em;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.5em;
+    width: 100%;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.625em 1em;
+    border: 1px solid #ccc;
+    border-radius: 0.25em;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #4285f4;
+}
+
+.input-group label {
+    position: absolute;
+    left: 1em;
+    transform: translateY(-100%);
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 0.75em;
+    color: #4285f4;
+}
+
+button {
+    width: 100%;
+    padding: 0.625em 1em;
+    border: none;
+    border-radius: 0.25em;
+    background-color: #4285f4;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #357ae8;
+}
+
+.divider {
+    width: 100%;
+    height: 0.0625em;
+    background-color: #e0e0e0;
+    margin: 1.5em 0;
+}
+
+.create-account a {
+    color: #4285f4;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.create-account a:hover {
+    text-decoration: underline;
+}

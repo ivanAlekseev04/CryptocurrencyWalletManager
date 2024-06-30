@@ -30,14 +30,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public final ResponseEntity<Map<String, String>> handleUnauthorizedUser(UsernameNotFoundException e) {
-        var msg = Map.of("message", e.getMessage());
-
-        log.error(msg.toString());
-        return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
-    }
-
     // catch internal server errors
     @ExceptionHandler(IllegalArgumentException.class)
     public final ResponseEntity<Map<String, String>> handleInternalServerErrors(IllegalArgumentException e) {
@@ -79,7 +71,7 @@ public class GlobalExceptionHandler {
                         FieldError::getDefaultMessage, (o1, o2) -> o1, HashMap::new));
 
         log.error(errors.toString());
-        return ResponseEntity.badRequest().body(errors);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, List<String>>> handleConstraintViolationException(ConstraintViolationException ex) {
@@ -92,6 +84,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
+    // Business logic
     @ExceptionHandler(BadRequestToAPIException.class)
     public final ResponseEntity<Map<String, String>> handleBadRequestToAPI(BadRequestToAPIException e) {
         var msg = Map.of("message", e.getMessage());
@@ -99,12 +92,25 @@ public class GlobalExceptionHandler {
         log.error(msg.toString());
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(AssetNotFoundException.class)
     public final ResponseEntity<Map<String, String>> handleAssetNotFoundException(AssetNotFoundException e) {
         var msg = Map.of("message", e.getMessage());
 
         log.error(msg.toString());
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public final ResponseEntity<Map<String, String>> handleUnauthorizedUser(UsernameNotFoundException e) {
+        var msg = Map.of("message", e.getMessage());
+
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(AlreadyLoggedInException.class)
+    public final ResponseEntity<Map<String, String>> handleAlreadyLoggedInUser(AlreadyLoggedInException e) {
+        var msg = Map.of("message", e.getMessage());
+
+        log.error(msg.toString());
+        return new ResponseEntity<>(msg, HttpStatus.FORBIDDEN);
     }
 }
