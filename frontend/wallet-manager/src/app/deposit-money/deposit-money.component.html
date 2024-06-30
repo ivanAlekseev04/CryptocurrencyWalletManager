@@ -1,0 +1,35 @@
+<header>
+  <nav class="navbar">
+    <div class="nav-left">
+      <button class="nav-button" (click)="navigateTo('wallet/buy')">Buy</button> <!--(click)="navigateTo('wallet/buy')"-->
+      <button class="nav-button" (click)="navigateTo('wallet/sell')">Sell</button>
+      <button class="nav-button">Info</button>
+      <button class="nav-button" style="background-color: cornflowerblue;">Deposit</button>
+    </div>
+    <div class="nav-right">
+      <img src="https://i.pinimg.com/564x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg" alt="Profile" class="profile-logo" (click)="navigateTo('user')">
+      <!--(click)="goToProfile()"-->
+    </div>
+  </nav>
+</header>
+
+<div class="main">
+  <div class="body">
+    <div class="form-container">
+      <div class="form-header">
+        <h1>Deposit money</h1>
+      </div>
+      <form id="depositForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" step="0.001" name="amount" [(ngModel)]="amount" required>
+        </div>
+        <div class="form-group">
+          <button type="submit">Deposit</button>
+        </div>
+        <div *ngIf="errorMessage" class="error" [innerHTML]="errorMessage"></div>
+        <div *ngIf="successMessage" class="success" [innerHTML]="successMessage"></div>
+      </form>
+    </div>
+  </div>
+</div>
