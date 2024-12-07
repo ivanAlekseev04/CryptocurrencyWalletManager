@@ -3,8 +3,16 @@
     <div class="nav-left">
       <button class="nav-button" (click)="navigateTo('wallet/buy')">Buy</button>
       <button class="nav-button" (click)="navigateTo('wallet/sell')">Sell</button>
-      <button class="nav-button">Info</button>
-      <button class="nav-button" (click)="navigateTo('wallet/deposit_money')">Deposit</button>
+      <div class="info-container" (mouseenter)="showMenu = true" (mouseleave)="showMenu = false">
+        <button class="nav-button" *ngIf="showMenu == false">Info</button>
+        <div class="nav-button" *ngIf="showMenu">
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary')">Summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary/overall')">Overall summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/history')">History</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/history/period')">History by period</button>
+        </div>
+      </div>
+      <button class="nav-button" (click)="navigateTo('wallet/money/deposit')">Deposit</button>
     </div>
     <div class="nav-right">
       <img src="https://i.pinimg.com/564x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg" alt="Profile" class="profile-logo" style="background-color: cornflowerblue;">
@@ -17,7 +25,7 @@
     <div class="form-container">
       <img src="https://i.pinimg.com/564x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg" alt="Profile" class="profile-logo-profile-tab" >
       <p>Hi, {{ getCurrentUserName() }} !</p>
-      <form id="buyForm" (ngSubmit)="updateUserForm()">
+      <form id="updateForm" (ngSubmit)="updateUserForm()">
         <div class="form-group">
           <label for="userName">New username</label>
           <input type="text" id="userName" name="userName" [(ngModel)]="userName" required>
@@ -29,12 +37,12 @@
         <div class="form-group">
           <button type="submit">Update credentials</button>
         </div>
-        <div class="form-group">
-          <button (click)="logout()" style="background-color: red">Logout</button>
-        </div>
-        <div *ngIf="errorMessage" class="error" [innerHTML]="errorMessage"></div>
-        <div *ngIf="successMessage" class="success" [innerHTML]="successMessage"></div>
       </form>
+      <div class="form-group">
+        <button (click)="logout()" style="background-color: red">Logout</button>
+      </div>
+      <div *ngIf="errorMessage" class="error" [innerHTML]="errorMessage"></div>
+      <div *ngIf="successMessage" class="success" [innerHTML]="successMessage"></div>
     </div>
   </div>
 </div>

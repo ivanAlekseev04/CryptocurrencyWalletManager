@@ -1,0 +1,83 @@
+<header>
+  <nav class="navbar">
+    <div class="nav-left">
+      <button class="nav-button" (click)="navigateTo('wallet/buy')">Buy</button>
+      <button class="nav-button" (click)="navigateTo('wallet/sell')">Sell</button>
+      <div class="info-container" (mouseenter)="showMenu = true" (mouseleave)="showMenu = false">
+        <button class="nav-button" *ngIf="showMenu == false">Info</button>
+        <div class="nav-button" *ngIf="showMenu">
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary')">Summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary/overall')">Overall summary</button>
+          <button class="dropdown-item" style="background-color: cornflowerblue;">History</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/history/period')">History by period</button>
+        </div>
+      </div>
+      <button class="nav-button" (click)="navigateTo('wallet/money/deposit')">Deposit</button>
+    </div>
+    <div class="nav-right">
+      <img src="https://i.pinimg.com/564x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg" alt="Profile" class="profile-logo" (click)="navigateTo('user')">
+    </div>
+  </nav>
+</header>
+
+<div class="main">
+  <div class="body">
+    <div class="form-container">
+      <form id="offeringsForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <p>Transactions type:</p>
+          <label for="BOUGHT">
+            <input type="radio" id="BOUGHT" name="type" value="BOUGHT" [(ngModel)]="selectedType">BOUGHT
+          </label><br>
+          <label for="SOLD">
+            <input type="radio" id="SOLD" name="type" value="SOLD" [(ngModel)]="selectedType">SOLD
+          </label><br>
+          <label for="ALL">
+            <input type="radio" id="ALL" name="type" value="ALL" [(ngModel)]="selectedType" checked>ALL
+          </label><br>
+        </div>
+
+        <div class="form-group">
+          <input type="checkbox" id="displayForConcreteAsset" name="displayForConcreteAsset" [(ngModel)]="displayForConcreteAsset">
+          <label for="displayForConcreteAsset">Display for concrete asset</label>
+        </div>
+
+        <div *ngIf="displayForConcreteAsset" class="form-group">
+          <label for="asset" style="font-weight: bold;">Asset ID:</label>
+          <input type="text" id="asset" name="asset" [(ngModel)]="assetId">
+        </div>
+
+        <div class="form-group">
+          <button type="submit">List transactions</button>
+        </div>
+
+        <div *ngIf="errorMessage" class="error" [innerHTML]="errorMessage"></div>
+      </form>
+    </div>
+  </div>
+  <div *ngIf="formWasSubmitted" class="body">
+      <div class="table-container">
+        <div class="table-row">
+          <div class="heading">Transactions</div>
+        </div>
+        <div class="table-row">
+          <div class="row-item table-header">Type</div>
+          <div class="row-item table-header">Amount</div>
+          <div class="row-item table-header">Asset name</div>
+          <div class="row-item table-header">Asset price</div>
+          <div class="row-item table-header">Selling profit</div>
+          <div class="row-item table-header">Date</div>
+        </div>
+        <div *ngIf="transactions.length > 0" class="table-body">
+          <div *ngFor="let transaction of transactions" class="table-row">
+            <div class="row-item">{{transaction.type}}</div>
+            <div class="row-item">{{transaction.amount}}</div>
+            <div class="row-item">{{transaction?.crypto?.name}}</div>
+            <div class="row-item">{{transaction?.crypto?.price}}</div>
+            <div class="row-item">{{transaction.type === 'SOLD' ? transaction.sellingProfit : '-'}}</div>
+            <div class="row-item">{{transaction.dateOfCommit | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

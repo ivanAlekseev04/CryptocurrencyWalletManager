@@ -35,6 +35,7 @@ export class DepositMoneyComponent {
   amount: number | null = null;
   errorMessage: string = '';
   successMessage: string = '';
+  showMenu = false;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -44,7 +45,7 @@ export class DepositMoneyComponent {
 
   onSubmit() {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const depositUrl = 'http://localhost:5510/wallet/deposit_money';
+    const depositUrl = 'http://localhost:5510/wallet/money/deposit';
 
     if(this.amount === null) {
       this.amount = 0;

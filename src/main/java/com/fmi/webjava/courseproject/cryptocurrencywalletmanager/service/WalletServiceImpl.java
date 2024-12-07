@@ -211,8 +211,9 @@ public class WalletServiceImpl implements WalletService {
         var wallet = userCryptoRepository.findByCryptoNameAndUserId(assetID, curUserId());
         if (wallet.isEmpty()) {
             log.info("User {} hasn't bought any asset with id {}, returning empty set", currUserName(), assetID);
-            return Collections.emptySet();
+            return Collections.emptySet(); // FIXME: need to thrown error
         }
+
         var res = new GetWalletSummaryOutput(assetID, wallet.get().getAmount(), wantedAsset.price(),
                 wallet.get().getAmount() * (wantedAsset.price() - wallet.get().getAverageCryptoBuyingPrice()));
 
@@ -222,7 +223,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public GetWalletOverallSummaryOutput wallet_overall_summary() {
-        log.info("Returning infortmation for user {}'s profile", currUserName());
+        log.info("Returning information for user {}'s profile", currUserName());
         User currUser = userRepository.findById(curUserId()).get();
 
         var walletSummary = wallet_summary(null);
@@ -242,7 +243,7 @@ public class WalletServiceImpl implements WalletService {
         else if (type == null && assetId != null) {
             CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetId);
             log.info("Extracting all transactions for user {} with assetID {}", curUserId(), assetId);
-            transactions = transactionRepository.findTransactionByAssetId(curUserId(), assetId);
+            transactions = transactionRepository.findTransactionsByAssetId(curUserId(), assetId);
         }
         else if (type != null && assetId == null) {
             log.info("Extracting all transactions for user {} of type {}", curUserId(), type);
@@ -251,7 +252,7 @@ public class WalletServiceImpl implements WalletService {
         else {
             CryptoInformation wantedAsset = getCryptoInformationIfAvailable(assetId);
             log.info("Extracting all transactions for user {} of type {} for crypto {}", curUserId(), type, assetId);
-            transactions = transactionRepository.findTransactionByAssetAndType(curUserId(), assetId, type);
+            transactions = transactionRepository.findTransactionsByAssetAndType(curUserId(), assetId, type);
         }
 
         return transactions;
@@ -265,13 +266,13 @@ public class WalletServiceImpl implements WalletService {
             transactions = transactionRepository.findAllTransactionsForUser(curUserId());
         }
         else if (before != null && after == null) {
-            transactions = transactionRepository.findTransactionBefore(curUserId(), before);
+            transactions = transactionRepository.findTransactionsBefore(curUserId(), before);
         }
         else if (before == null && after != null) {
-            transactions = transactionRepository.findTransactionAfter(curUserId(), after);
+            transactions = transactionRepository.findTransactionsAfter(curUserId(), after);
         }
         else {
-            transactions = transactionRepository.findTransactionBetween(curUserId(), before, after);
+            transactions = transactionRepository.findTransactionsBetween(curUserId(), before, after);
         }
 
         return transactions;

@@ -1,14 +1,21 @@
 <header>
   <nav class="navbar">
     <div class="nav-left">
-      <button class="nav-button" (click)="navigateTo('wallet/buy')">Buy</button> <!--(click)="navigateTo('wallet/buy')"-->
+      <button class="nav-button" (click)="navigateTo('wallet/buy')">Buy</button>
       <button class="nav-button" (click)="navigateTo('wallet/sell')">Sell</button>
-      <button class="nav-button">Info</button>
+      <div class="info-container" (mouseenter)="showMenu = true" (mouseleave)="showMenu = false">
+        <button class="nav-button" *ngIf="showMenu == false">Info</button>
+        <div class="nav-button" *ngIf="showMenu">
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary')">Summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary/overall')">Overall summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/history')">History</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/history/period')">History by period</button>
+        </div>
+      </div>
       <button class="nav-button" style="background-color: cornflowerblue;">Deposit</button>
     </div>
     <div class="nav-right">
       <img src="https://i.pinimg.com/564x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg" alt="Profile" class="profile-logo" (click)="navigateTo('user')">
-      <!--(click)="goToProfile()"-->
     </div>
   </nav>
 </header>

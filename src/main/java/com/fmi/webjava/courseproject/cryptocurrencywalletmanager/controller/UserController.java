@@ -58,4 +58,11 @@ public class UserController {
 
         return new ResponseEntity<>(userMapper.userToUserDTOOutput(updatedUser), HttpStatus.OK);
     }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        userService.logout(request, response);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 }

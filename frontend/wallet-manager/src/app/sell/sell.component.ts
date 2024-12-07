@@ -32,6 +32,7 @@ export class SellComponent {
   errorMessage: string = '';
   successMessage: string = '';
   asset: Asset = {assetID: '', amount: 0};
+  showMenu = false;
 
   constructor(private router: Router, private http: HttpClient) {}
 

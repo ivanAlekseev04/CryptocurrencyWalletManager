@@ -35,7 +35,7 @@ interface BoughtCryptoOutput {
   styleUrl: './buy.component.css'
 })
 export class BuyComponent {
-  selectedType: string = 'all'; // Default to 'all'
+  selectedType: string = 'all'; // Default way offerings to be listed = 'all'
   displayConcreteAsset: boolean = false;
   assetId: string = '';
   errorMessage2: string = '';
@@ -43,6 +43,7 @@ export class BuyComponent {
   successMessage: string = '';
   offerings: Offering[] = [];
   asset: Asset = {assetID: '', amount: 0};
+  showMenu = false;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -82,7 +83,7 @@ export class BuyComponent {
       return;
     }
 
-    const url = `http://localhost:5510/wallet/list_offerings/asset/${this.assetId}`;
+    const url = `http://localhost:5510/wallet/offerings/${this.assetId}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     this.http.get<Offering>(url, { headers, withCredentials: true }).subscribe(
@@ -102,9 +103,9 @@ export class BuyComponent {
     let url;
 
     if(this.selectedType === "all") {
-      url = "http://localhost:5510/wallet/list_offerings";
+      url = "http://localhost:5510/wallet/offerings";
     } else {
-      url = `http://localhost:5510/wallet/list_offerings?asset_type=${this.selectedType}`;
+      url = `http://localhost:5510/wallet/offerings?asset_type=${this.selectedType}`;
     }
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
