@@ -13,7 +13,6 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserCryp
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.mapper.UserMapper;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletService;
-import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.service.WalletServiceImpl;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.util.TransactionType;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +38,7 @@ public class WalletController {
     @Autowired
     private TransactionMapper transactionMapper;
 
-    @GetMapping("/list_offerings")
+    @GetMapping("/offerings")
     public ResponseEntity<Set<CryptoInformation>> listOfferings(@RequestParam(value = "asset_type", required = false) String assetType) {
         var allowedTypes = List.of("coins", "crypto");
 
@@ -54,7 +53,7 @@ public class WalletController {
         return new ResponseEntity<>(assets, HttpStatus.OK);
     }
 
-    @GetMapping("/list_offerings/asset/{asset_id}")
+    @GetMapping("/offerings/{asset_id}")
     public ResponseEntity<CryptoInformation> getCertainAsset(@PathVariable("asset_id") String assetID) {
         if (assetID == null || assetID.isBlank()) {
             log.error("Invalid asset_id declaration");
@@ -65,7 +64,7 @@ public class WalletController {
         return new ResponseEntity<>(asset, HttpStatus.OK);
     }
 
-    @PatchMapping("/deposit_money")
+    @PatchMapping("/money/deposit")
     public ResponseEntity<UserDTOOutput> depositMoney(@RequestBody Map<String, Double> depositedMoney) {
         if (!depositedMoney.containsKey("money")) {
             throw new IllegalArgumentException("Error: invalid request body. Body should contain money declaration");
@@ -95,22 +94,22 @@ public class WalletController {
         return new ResponseEntity<>(sold, HttpStatus.OK);
     }
 
-    @GetMapping("/wallet_summary")
+    @GetMapping("/summary")
     public ResponseEntity<Set<GetWalletSummaryOutput>> getWalletSummary(@RequestParam(
-            value = "asset_name", required = false) String assetName) {
-        Set<GetWalletSummaryOutput> wallet = walletService.wallet_summary(assetName);
+            value = "asset_id", required = false) String assetId) {
+        Set<GetWalletSummaryOutput> wallet = walletService.wallet_summary(assetId);
 
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 
-    @GetMapping("/wallet_overall_summary")
+    @GetMapping("/summary/overall")
     public ResponseEntity<GetWalletOverallSummaryOutput> getWalletOverallSummary() {
         GetWalletOverallSummaryOutput wallet = walletService.wallet_overall_summary();
 
         return new ResponseEntity<>(wallet, HttpStatus.OK);
     }
 
-    @GetMapping("/wallet_history")
+    @GetMapping("/history")
     public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "type", required = false) String type,
                                                              @RequestParam(value = "asset_id", required = false) String assetId) {
         var allowedTypes = Arrays.stream(TransactionType.values())
@@ -126,9 +125,9 @@ public class WalletController {
                         getTransactionHistory(type, assetId)), HttpStatus.OK);
     }
 
-    @GetMapping("/wallet_history/period")
-    public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "before", required = false)LocalDateTime before,
-                                                                   @RequestParam(value = "after", required = false)LocalDateTime after) {
+    @GetMapping("/history/period")
+    public ResponseEntity<List<TransactionDTO>> getTransactionInfo(@RequestParam(value = "before", required = false) LocalDateTime before,
+                                                                   @RequestParam(value = "after", required = false) LocalDateTime after) {
 
         return new ResponseEntity<>(transactionMapper.
                 transactionListToTransactionDTOList(walletService.

@@ -4,6 +4,8 @@ import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.model.User;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.repository.UserRepository;
 import com.fmi.webjava.courseproject.cryptocurrencywalletmanager.security.userdetails.CustomUserDetails;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -11,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +107,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(toUpdate.get());
     }
 
-    public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        //SecurityContextHolder.getContext().setAuthentication(null);
+
+        // Your custom logout logic here
+        // For example, you can invalidate the session and clear the security context
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
     }
 }

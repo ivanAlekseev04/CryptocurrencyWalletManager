@@ -29,6 +29,7 @@ export class UserComponent {
   password: string = '';
   errorMessage: string = '';
   successMessage: string = '';
+  showMenu = false;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -67,26 +68,16 @@ export class UserComponent {
 
   logout() {
 
-    localStorage.removeItem('isLogged');
-    localStorage.removeItem('userName');
+    localStorage.setItem('isLogged', 'false');
+    localStorage.setItem('userName', 'anonymousUser');
     document.cookie = 'JSESSIONID' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
-    this.http.post('http://localhost:5510/logout', {})
-    this.router.navigate(['login']);
 
-    /*.subscribe(
-      () => {
-        localStorage.removeItem('isLogged');
-        localStorage.removeItem('userName');
-        document.cookie = 'JSESSIONID' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
+    this.http.post('http://localhost:5510/logout', {}, { withCredentials: true }).subscribe({
+      next: () => {
         this.router.navigate(['login']);
-      },
-      (error: HttpErrorResponse) => {
-        if (error.status != 200) {
-          // Handle validation errors
-          this.errorMessage = this.getErrorsFromResponse(error.error);
-        }
       }
-    );*/
+    });
+
   }
 
   navigateTo(route: string) {

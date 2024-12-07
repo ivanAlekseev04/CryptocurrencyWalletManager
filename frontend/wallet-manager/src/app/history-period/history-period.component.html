@@ -1,0 +1,74 @@
+<header>
+  <nav class="navbar">
+    <div class="nav-left">
+      <button class="nav-button" (click)="navigateTo('wallet/buy')">Buy</button>
+      <button class="nav-button" (click)="navigateTo('wallet/sell')">Sell</button>
+      <div class="info-container" (mouseenter)="showMenu = true" (mouseleave)="showMenu = false">
+        <button class="nav-button" *ngIf="showMenu == false">Info</button>
+        <div class="nav-button" *ngIf="showMenu">
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary')">Summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/summary/overall')">Overall summary</button>
+          <button class="dropdown-item" (click)="navigateTo('wallet/history')">History</button>
+          <button class="dropdown-item" style="background-color: cornflowerblue;">History by period</button>
+        </div>
+      </div>
+      <button class="nav-button" (click)="navigateTo('wallet/money/deposit')">Deposit</button>
+    </div>
+    <div class="nav-right">
+      <img src="https://i.pinimg.com/564x/57/00/c0/5700c04197ee9a4372a35ef16eb78f4e.jpg" alt="Profile" class="profile-logo" (click)="navigateTo('user')">
+    </div>
+  </nav>
+</header>
+
+<div class="main">
+  <div class="body">
+    <div class="form-container">
+      <form id="offeringsForm" (ngSubmit)="submitForm()">
+        <div class="form-group">
+          <p>Choose intervals:</p>
+        </div>
+
+        <div class="form-group">
+          <label for="before" style="font-weight: bold;">Before date and time:</label>
+          <input type="datetime-local" id="before" name="before" [(ngModel)]="beforeDateTime">
+        </div>
+
+        <div class="form-group">
+          <label for="after" style="font-weight: bold;">After date and time:</label>
+          <input type="datetime-local" id="after" name="after" [(ngModel)]="afterDateTime">
+        </div>
+
+        <div class="form-group">
+          <button type="submit">List transactions</button>
+        </div>
+
+        <div *ngIf="errorMessage" class="error" [innerHTML]="errorMessage"></div>
+      </form>
+    </div>
+  </div>
+  <div class="body">
+    <div class="table-container">
+      <div class="table-row">
+        <div class="heading">Transactions</div>
+      </div>
+      <div class="table-row">
+        <div class="row-item table-header">Type</div>
+        <div class="row-item table-header">Amount</div>
+        <div class="row-item table-header">Asset name</div>
+        <div class="row-item table-header">Asset price</div>
+        <div class="row-item table-header">Selling profit</div>
+        <div class="row-item table-header">Date</div>
+      </div>
+      <div *ngIf="transactions.length > 0" class="table-body">
+        <div *ngFor="let transaction of transactions" class="table-row">
+          <div class="row-item">{{transaction.type}}</div>
+          <div class="row-item">{{transaction.amount}}</div>
+          <div class="row-item">{{transaction?.crypto?.name}}</div>
+          <div class="row-item">{{transaction?.crypto?.price}}</div>
+          <div class="row-item">{{transaction.type === 'SOLD' ? transaction.sellingProfit : '-'}}</div>
+          <div class="row-item">{{transaction.dateOfCommit | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -39,14 +39,7 @@ public class WebSecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .securityContext(context -> context.securityContextRepository(
                         new HttpSessionSecurityContextRepository()))
-                .logout(logout -> logout
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login")
-                                .invalidateHttpSession(true)
-                                .clearAuthentication(true)
-                                .deleteCookies("JSESSIONID")
-                                .permitAll()
-                                .addLogoutHandler(new SecurityContextLogoutHandler()))
+                .logout(logout -> logout.disable()) // disable default Spring Boot logout to perform our custom
                 .build();
     }
 

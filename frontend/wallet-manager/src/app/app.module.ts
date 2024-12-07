@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { RouterModule } from '@angular/router';  // Import RouterModule
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule } from '@angular/common/http';
-
-import { WalletService } from '../service/wallet/wallet.service';
-import { AuthService } from '../service/auth/auth.service';
+import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
+import { ChartModule } from 'angular-highcharts'; // For diagrams
 
 import { UserComponent } from './user/user.component';
 import { SellComponent } from './sell/sell.component';
@@ -16,6 +14,10 @@ import { RegisterComponent } from './register/register.component';
 import { WalletComponent } from './wallet/wallet.component'
 import { BuyComponent } from './buy/buy.component';
 import { DepositMoneyComponent } from './deposit-money/deposit-money.component';
+import { HistoryComponent } from './history/history.component';
+import { HistoryPeriodComponent } from './history-period/history-period.component';
+import { SummaryComponent } from './summary/summary.component';
+import { OverallSummaryComponent } from './overall-summary/overall-summary.component';
 
 @NgModule({
 declarations: [
@@ -26,7 +28,11 @@ declarations: [
   BuyComponent,
   DepositMoneyComponent,
   SellComponent,
-  UserComponent
+  UserComponent,
+  HistoryComponent,
+  HistoryPeriodComponent,
+  SummaryComponent,
+  OverallSummaryComponent
 ],
 imports: [
   BrowserModule,
@@ -34,14 +40,13 @@ imports: [
   FormsModule,
   HttpClientModule,
   RouterModule,
+  ChartModule,
   HttpClientXsrfModule.withOptions({
       cookieName: 'XSRF-TOKEN',
       headerName: 'X-XSRF-TOKEN',
   })
 ],
-providers: [
-  WalletService, AuthService
-],
+providers: [],
 bootstrap: [AppComponent]
 })
 
